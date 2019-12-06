@@ -54,6 +54,7 @@ class SkyhookDM:
             obj_num = 0
 
             for br in brs:
+                br = br.strip()
                 elems = br.split('.')
                 br_name = elems[-1]
                 elems.remove(br_name)
