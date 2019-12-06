@@ -34,7 +34,7 @@ _Classes_:
 
     * getRoot(): returns the highest level of the RootNode. 
 
-    * getSchema(): returns the schema string in Json which describes the logical layout of the file, such as TTree, TBranch, RootDirectory.
+    * getSchema(): returns a python dictionary which describes the logical layout of the file, such as TTree, TBranch, RootDirectory.
 
 * RootNode:
 
