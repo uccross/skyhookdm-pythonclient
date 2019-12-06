@@ -72,7 +72,7 @@ class SkyhookDM:
                 for i in range(len(elems)):
                     for j in range(len(f_schema['children'])):
                         ch_sche = f_schema['children'][j]
-                        if elems[i] == ch_sche['name']:
+                        if elems[i].strip() == ch_sche['name']:
                             f_schema = ch_sche
                             break
                 
@@ -80,7 +80,7 @@ class SkyhookDM:
 
                 for m in range(len(f_schema['children'])):
                     ch_sche = f_schema['children'][m]
-                    if br_name == ch_sche['name']:
+                    if br_name.strip() == ch_sche['name']:
                         found = True
                         f_schema = ch_sche
                         #limit the obj num to 1
