@@ -52,7 +52,7 @@ class SkyhookDM:
             prefix = file.dataset + '#' + file.name + '#' +file.ROOTDirectory
             brs = querystr.split('project')[-1].split(',')
             obj_num = 0
-
+            
             for br in brs:
                 br = br.strip()
                 elems = br.split('.')
