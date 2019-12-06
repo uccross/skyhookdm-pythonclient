@@ -20,6 +20,8 @@ This module defines the classes such as Dataset, File, RootNode  which should be
 
 _Classes_:
 
+<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/blob/master/rsc/Classes_in_Skyhook_common.png" width="45%"></a></p>
+
 * Dataset:
 
     * getFiles(): returns a list of File objects in this dataset.
@@ -45,6 +47,7 @@ _Classes_:
     * getChildren(): returns the children nodes as a list. 
 
     * getParent(): returns the parent of the current RootNode.
+    
 
 **Skyhook_driver:**
 
