@@ -116,7 +116,7 @@ class SkyhookDM:
                 else:
                     bigtable = bigtable.append_column(table.field(1), table.columns[1])
 
-            return bigtable
+            return bigtable.replace_schema_metadata(None)
 
 
         def fileQuery(obj, querystr):
