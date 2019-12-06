@@ -3,7 +3,9 @@
 from skyhook_common import *
 
 def writeDataset(file_urls, dstname, addr, dst_type = 'root'):
- 
+    cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
+    cluster.connect()
+    ioctx = cluster.open_ioctx('hepdatapool')
     #internal functions
     def match_skyhook_datatype(d_type):
         #how to handle float32
@@ -141,13 +143,9 @@ def writeDataset(file_urls, dstname, addr, dst_type = 'root'):
         try:
             if num_partitions == 1:
             # Write to the Ceph pool
-                cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
-                cluster.connect()
-                ioctx = cluster.open_ioctx('hepdatapool')
+                
                 ioctx.aio_write_full(objname + '.0', buff_bytes)
                 ioctx.set_xattr(objname + '.0', 'size', str(len(buff_bytes)))
-                ioctx.close()
-                cluster.shutdown()
             else:
                 cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
                 cluster.connect()
@@ -327,4 +325,8 @@ def writeDataset(file_urls, dstname, addr, dst_type = 'root'):
     cluster.shutdown()
     # with open('/users/xweichu/projects/pool/' + dstname, 'w') as outfile:
     #     json.dump(metadata, outfile)
+
+
+    ioctx.close()
+    cluster.shutdown()
     return True
