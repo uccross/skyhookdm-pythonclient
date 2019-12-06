@@ -6,4 +6,4 @@ pip install bokeh
 pip install backports.lzma
 sudo cp * /usr/lib/python2.7/
 pip install wget
-sh startup.sh
+rados mkpool hepdatapool
