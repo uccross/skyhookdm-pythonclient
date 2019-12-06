@@ -1,3 +1,18 @@
+**Quick Start:**
+
+* Suppose that you have the Skyhook Cloudlab expeirment running.
+* Clone this Repo to your local disk.
+* Run the script of "requirements.sh" to check and install dependencies.
+* Run the script of "startup.sh", and you're ready to go.
+
+</br>
+</br>
+
+**========================= More Details about SkyhookDM Python APIs =========================**
+
+</br>
+</br>
+
 **Skyhook_common:**
 
 This module defines the classes such as Dataset, File, RootNode  which should be understood by both the modules of SkyhookDM and Skyhook_driver.  
