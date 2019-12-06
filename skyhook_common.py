@@ -100,7 +100,11 @@ class RootNode(object):
         return self.parent
     
     def __str__(self):
-        return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.parent.name + '.' + self.name + ', ' + self.datatype +'\"\n'
+        if self.parent != None:
+            return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.parent.name + '.' + self.name + ', ' + self.datatype +'\"\n'
+        return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.name + ', ' + self.datatype +'\"\n'
     
     def __repr__(self):
-        return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.parent.name + '.' + self.name + ', ' + self.datatype +'\"\n'
+        if self.parent != None:
+            return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.parent.name + '.' + self.name + ', ' + self.datatype +'\"\n'
+        return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.name + ', ' + self.datatype +'\"\n'
