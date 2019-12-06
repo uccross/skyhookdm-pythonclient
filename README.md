@@ -85,36 +85,6 @@ sk = SkyhookDM()
 
 sk.connect('128.105.144.226')
 
-# get the dataset named ‘aod’
-
-dst = sk.getDataset('aod')
-
-# get the first file in the dataset
-
-f = dst.getFiles()[0]
-
-# run the query on the first file, queries only one branch
-
-table = sk.runQuery(f,'select event_id>5, project Events;75.Muon_phi')
-
-# run the query on the dataset, queries multiple branches.
-
-tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;75.Muon_phi,Events;75.Muon_mass')
-```
-==========================
-```python
-# import the lib
-
-from skyhook import SkyhookDM
-
-# create a new SkyhookDM object
-
-sk = SkyhookDM()
-
-# connect to Skyhook_driver
-
-sk.connect('128.105.144.226')
-
 # give the Root file urls
 
 urls = ['[http://uaf-1.t2.ucsd.edu/jeff_data/files/0C1BA5F0-9253-F24C-BBBA-E78510BC4D8E.root](http://uaf-1.t2.ucsd.edu/jeff_data/files/0C1BA5F0-9253-F24C-BBBA-E78510BC4D8E.root)',
@@ -144,4 +114,35 @@ urls = ['[http://uaf-1.t2.ucsd.edu/jeff_data/files/0C1BA5F0-9253-F24C-BBBA-E7851
 # write the dataset to Ceph cluster and name the dataset ‘demodst’
 
 sk.writeDataset(urls,'demodst')
+```
+==========================
+
+```python
+# import the lib
+
+from skyhook import SkyhookDM
+
+# create a new SkyhookDM object
+
+sk = SkyhookDM()
+
+# connect to Skyhook_driver
+
+sk.connect('128.105.144.226')
+
+# get the dataset named ‘aod’
+
+dst = sk.getDataset('aod')
+
+# get the first file in the dataset
+
+f = dst.getFiles()[0]
+
+# run the query on the first file, queries only one branch
+
+table = sk.runQuery(f,'select event_id>5, project Events;75.Muon_phi')
+
+# run the query on the dataset, queries multiple branches.
+
+tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;75.Muon_phi,Events;75.Muon_mass')
 ```
