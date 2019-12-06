@@ -59,7 +59,7 @@ class SkyhookDM:
                 elems.remove(br_name)
                 local_prefix = ''
                 for elem in elems:
-                    local_prefix = local_prefix + '#' + elem
+                    local_prefix = local_prefix + '#' + elem.strip()
                 obj_prefix = prefix + local_prefix + '#'
                 data_schema = ''
                 
