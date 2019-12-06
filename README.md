@@ -2,7 +2,7 @@
 
 This module defines the classes such as Dataset, File, RootNode  which should be understood by both the modules of SkyhookDM and Skyhook_driver.  
 
-**Classes**:
+_Classes_:
 
 * Dataset:
 
@@ -38,7 +38,7 @@ Skyhook_driver handles the heavy workloads such as writing the dataset to the ce
 
 For now this module only contains one class which is SkyhookDM. This module and Skyhook_common should be installed by the client. SkyhookDM connects to the Skyhook_driver and submit tasks to Skyhook_driver. Some lightweight queries are also handled by SkyhookDM.
 
-**Classes**:
+_Classes_:
 
 * SkyhookDM:
 
