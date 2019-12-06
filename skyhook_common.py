@@ -65,10 +65,10 @@ class File:
         print(obj_prefix)
         
     def __str__(self):
-        return '\"File: ' + self.name + ', ' + str(self.attributes['size']) + ' bytes\"'
+        return '\"File: ' + self.name + ', ' + str(self.attributes['size']) + ' bytes\"\n'
     
     def __repr__(self):
-        return '\"File: ' + self.name + ', ' + str(self.attributes['size']) + ' bytes\"'
+        return '\"File: ' + self.name + ', ' + str(self.attributes['size']) + ' bytes\"\n'
 
 
 class RootNode(object):
@@ -100,7 +100,7 @@ class RootNode(object):
         return self.parent
     
     def __str__(self):
-        return '\"RootNode: ' + self.classtype + ': ' + self.name + ', ' + self.datatype +'\"'
+        return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.name + ', ' + self.datatype +'\"\n'
     
     def __repr__(self):
-        return '\"RootNode: ' + self.classtype + ': ' + self.name + ', ' + self.datatype +'\"'
+        return '\"RootNode: id: '+ self.node_id + ', ' + self.classtype + ': ' + self.name + ', ' + self.datatype +'\"\n'
