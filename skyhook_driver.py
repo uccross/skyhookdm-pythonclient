@@ -144,7 +144,7 @@ def writeDataset(file_urls, dstname, addr, dst_type = 'root'):
                 cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
                 cluster.connect()
                 ioctx = cluster.open_ioctx('hepdatapool')
-                ioctx.write_full(objname + '.0', buff_bytes)
+                ioctx.aio_write_full(objname + '.0', buff_bytes)
                 ioctx.set_xattr(objname + '.0', 'size', str(len(buff_bytes)))
                 ioctx.close()
                 cluster.shutdown()
@@ -159,7 +159,7 @@ def writeDataset(file_urls, dstname, addr, dst_type = 'root'):
                     writer.write_batch(batch)
                     buff = sink.getvalue()
                     buff_bytes = buff.to_pybytes()
-                    ioctx.write_full(objname + '.' + str(i), buff_bytes)
+                    ioctx.aio_write_full(objname + '.' + str(i), buff_bytes)
                     ioctx.set_xattr(objname + '.' + str(i), 'size', str(len(buff_bytes)))
                     i += 1
                 ioctx.close()
