@@ -50,7 +50,7 @@ class SkyhookDM:
         def generateQueryCommand(file, querystr):
             cmds = []
             prefix = file.dataset + '#' + file.name + '#' +file.ROOTDirectory
-            brs = querystr.split('project')[-1].split()[0].split(',')
+            brs = querystr.split('project')[-1].split(',')
             obj_num = 0
 
             for br in brs:
