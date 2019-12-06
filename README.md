@@ -3,7 +3,8 @@
 * Suppose that you have the Skyhook Cloudlab expeirment running.
 * Clone this Repo to your local disk.
 * Run the script of "requirements.sh" to check and install dependencies.
-* Run the script of "startup.sh", and you're ready to go.
+* Logout the ssh session and login again. 
+* Run the script of "startup.sh" and you're ready to go.
 
 </br>
 </br>
