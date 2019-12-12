@@ -112,7 +112,7 @@ class SkyhookDM:
             bigtable = None
             for table in tables:
                 if bigtable == None:
-                    bigtable = table
+                    bigtable = table.remove_column(0)
                 else:
                     bigtable = bigtable.append_column(table.field(1), table.columns[1])
 

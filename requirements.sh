@@ -1,4 +1,7 @@
-sudo apt install python-pip -y
+sudo apt-get install python-pip -y
+sudo apt-get install jupyter-core -y
+sudo apt-get install jupyter-notebook -y
+python2 -m pip install ipykernel
 pip install "dask[complete]"
 pip install pyarrow
 pip install uproot
