@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
-  name = 'skyhookdm-python',         # How you named your package folder (MyLib)
-  packages = ['skyhookdm-python'],   # Chose the same as "name"
+  name = 'skyhookdmpy',         # How you named your package folder (MyLib)
+  packages = ['skyhookdmpy'],   # Chose the same as "name"
   version = '0.2',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Python client of Skyhook for Ceph',   # Give a short description about your library
