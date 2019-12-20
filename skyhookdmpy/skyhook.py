@@ -1,4 +1,5 @@
-from skyhook_common import *
+from skyhookdmpy.skyhook_common import *
+# from skyhook_common import *
 import struct
 
 
@@ -17,7 +18,8 @@ class SkyhookDM:
     
     def writeDataset(self, path, dstname):
         def runOnDriver(path, dstname, addr):
-            import skyhook_driver as sd
+            # import skyhook_driver as sd
+            from skyhookdmpy import skyhook_driver as sd
             res = sd.writeDataset(path, dstname, addr)
             return res
 

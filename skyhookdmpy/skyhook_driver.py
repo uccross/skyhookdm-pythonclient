@@ -1,6 +1,7 @@
 #This is an example of dask server side skyhook_driver library.
 #Copy to /usr/lib/python2.7/ so that it can be imported anywhere 
-from skyhook_common import *
+# from skyhook_common import *
+from skyhookdmpy.skyhook_common import *
 
 def writeDataset(file_urls, dstname, addr, dst_type = 'root'):
  
