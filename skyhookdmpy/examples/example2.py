@@ -1,4 +1,4 @@
-from skyhook import SkyhookDM
+from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
 sk.connect('localhost')
 dst = sk.getDataset('mm')
