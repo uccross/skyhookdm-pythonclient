@@ -1,4 +1,4 @@
-from skyhook import SkyhookDM
+from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
 sk.connect('localhost')
 urls = ['https://github.com/uccross/skyhookdm-pythonclient/blob/master/rsc/nano_aod.root?raw=true']
