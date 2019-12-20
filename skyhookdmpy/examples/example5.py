@@ -1,5 +1,5 @@
 # suppose 
-from skyhook import SkyhookDM
+from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
 sk.connect('128.105.144.228')
 dst = sk.getDataset('nanodst')
