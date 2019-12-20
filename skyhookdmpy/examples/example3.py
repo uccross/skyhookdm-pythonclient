@@ -1,7 +1,7 @@
 from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
 sk.connect('localhost')
-urls = ['https://github.com/uccross/skyhookdm-pythonclient/blob/master/rsc/nano_aod.root?raw=true']
+urls = ['https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/nano_aod.root']
 sk.writeDataset(urls,'nanoexample')
 dst = sk.getDataset('nanoexample')
 files = dst.getFiles()
