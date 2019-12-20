@@ -20,7 +20,7 @@ This module defines the classes such as Dataset, File, RootNode  which should be
 
 _Classes_:
 
-<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/raw/master/rsc/Classes_in_Skyhook_common.png" width="45%"></a></p>
+<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/Classes_in_Skyhook_common.png" width="45%"></a></p>
 
 * Dataset:
 
