@@ -237,7 +237,11 @@ def writeDataset(file_urls, dstname, addr, dst_type = 'root'):
 
     def process_file(url):
         import wget
-        filename = wget.download(url)
+        if 'http' in url:
+            filename = wget.download(url)
+        else:
+            filename = url
+            
         root_dir = uproot.open(filename)
 
         stat_res = os.stat(filename)
