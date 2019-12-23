@@ -4,7 +4,7 @@
 * Run the script of "[requirements.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/requirements.sh)" to check and install dependencies[optinal].
 * Run "pip install skyhookdmpy" to install skyhookdmpy. 
 * Logout the ssh session and login again. 
-* Run the script of "startup.sh" and you're ready to go.
+* Run the script of "[startup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/startup.sh)" and you're ready to go.
 
 </br>
 </br>
