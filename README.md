@@ -4,6 +4,8 @@
 * Logout the ssh session and login again. 
 * Run the script of "[startup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/startup.sh)" and you're ready to go.
 
+Note: Cloning this repo is not necessary. Runing the scripts is enough. The scripts use 'pip' to install skyhookdmpy and other dependencies which can't be installed via 'pip' commands. 
+
 </br>
 </br>
 
