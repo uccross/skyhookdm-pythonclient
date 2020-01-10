@@ -8,6 +8,13 @@ class SkyhookDM:
         self.client = None
         self.addr = None
 
+        try:
+            self.cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
+            self.cluster.connect()
+            self.ioctx = self.cluster.open_ioctx('hepdatapool')
+
+        except Exception,e:
+            print(str(e))
 
     def connect(self, ip):
         addr = ip+':8786'
@@ -15,7 +22,32 @@ class SkyhookDM:
         client = Client(addr)
         self.client = client
 
-    
+    # Write the arrow table to Ceph
+    # Do we need to serialize it?
+    # Exception Handling
+    # Maintain Metadata
+    # Object namming
+    # Merge object?
+    # Split object?
+    # Submit to driver?  
+    def writeArrowTable(self, table, name):
+       #Serialize arrow table to bytes
+        batches = table.to_batches()
+        sink = pa.BufferOutputStream()
+        writer = pa.RecordBatchStreamWriter(sink, table.schema)
+
+        for batch in batches:
+            writer.write_batch(batch)
+        buff = sink.getvalue()
+        buff_bytes = buff.to_pybytes()
+        
+        # Write to the Ceph cluster
+        self.ioctx.aio_write_full(name, buff_bytes)
+        self.ioctx.set_xattr(name, 'size', str(len(buff_bytes)))
+
+        return True
+        
+
     def writeDataset(self, path, dstname):
         def runOnDriver(path, dstname, addr):
             # import skyhook_driver as sd
