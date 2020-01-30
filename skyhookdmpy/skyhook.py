@@ -78,7 +78,7 @@ class SkyhookDM:
     
     def runQuery(self, obj, querystr):
         #limit just to 1 obj
-        command_template = '--wthreads 1 --qdepth 120 --query hep --pool hepdatapool --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project-cols \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --subpartitions 10'
+        command_template = '--wthreads 1 --qdepth 120 --query hep --pool hepdatapool --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --subpartitions 10'
 
 
         def generateQueryCommand(file, querystr):
