@@ -146,3 +146,12 @@ table = sk.runQuery(f,'select event_id>5, project Events;75.Muon_phi')
 
 tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;75.Muon_phi,Events;75.Muon_mass')
 ```
+
+## Run in Docker
+
+todo:
+
+  * find out how kubernetes handles secret files, and how containers 
+    need to read that information.
+  * prepare a container for the above.
+  * share it with Ben et al.
