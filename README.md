@@ -149,9 +149,46 @@ tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;7
 
 ## Run in Docker
 
-todo:
+Assuming we have the following folder structure:
 
-  * find out how kubernetes handles secret files, and how containers 
-    need to read that information.
-  * prepare a container for the above.
-  * share it with Ben et al.
+```
+myproject/
+├── ceph/
+│   ├── ceph.client.admin.keyring
+│   └── ceph.conf
+└── scripts/
+    └── example.py
+```
+
+where:
+
+  * `scripts/` is we store Python scripts we want to execute.
+  * `ceph/` contains `ceph.conf` and `ceph.client.admin.keyring` 
+    files.
+
+We execute the example by doing the following:
+
+```bash
+cd myproject/
+
+docker run --rm -ti \
+  -v $PWD:/workspace \
+  -v $PWD/ceph:/etc/ceph \
+  -w /workspace \
+  uccross/skyhookdm-py \
+    /workspace/scripts/example.py
+```
+
+The above mounts the `myproject/` folder in a `/workspace` folder 
+inside the container. It also mounts the `myproject/ceph` folder to 
+`/etc/ceph` which is where the skyhookdm-py library expects it. It 
+then invokes the `scripts/example.py` file.
+
+## Run in Kubernetes
+
+The skyhookdm-py container requires ceph configuration files that can 
+be passed as secrets. We first create these two secrets:
+
+```yaml
+
+```
