@@ -175,7 +175,7 @@ docker run --rm -ti \
   -v $PWD:/workspace \
   -v $PWD/ceph:/etc/ceph \
   -w /workspace \
-  uccross/skyhookdm-py \
+  ivotron/skyhookdm-py \
     /workspace/scripts/example.py
 ```
 
@@ -186,9 +186,36 @@ then invokes the `scripts/example.py` file.
 
 ## Run in Kubernetes
 
-The skyhookdm-py container requires ceph configuration files that can 
-be passed as secrets. We first create these two secrets:
+The `ivotron/skyhookdm-py` container requires Ceph configuration files 
+that can be passed as secrets. We first create these two secrets:
+
+```bash
+kubectl create secret generic mysecret \
+  --from-file=/path/to/ceph.conf \
+  --from-file=/path/to/ceph.client.admin.keyring
+```
+
+Once the secrets are created, the following executes the test:
 
 ```yaml
-
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mypod
+    image: ivotron/skyhookdm-py
+    command: 'python /path/to/script.py'
+    volumeMounts:
+    - name: ceph-config
+      mountPath: "/etc/ceph/"
+      readOnly: true
+  volumes:
+  - name: ceph-config
+    secret:
+      secretName: mysecret
 ```
+
+In the above the `/path/to/script.py` needs to be updated to the 
+proper script.
