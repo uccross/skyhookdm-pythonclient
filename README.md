@@ -146,3 +146,76 @@ table = sk.runQuery(f,'select event_id>5, project Events;75.Muon_phi')
 
 tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;75.Muon_phi,Events;75.Muon_mass')
 ```
+
+## Run in Docker
+
+Assuming we have the following folder structure:
+
+```
+myproject/
+├── ceph/
+│   ├── ceph.client.admin.keyring
+│   └── ceph.conf
+└── scripts/
+    └── example.py
+```
+
+where:
+
+  * `scripts/` is we store Python scripts we want to execute.
+  * `ceph/` contains `ceph.conf` and `ceph.client.admin.keyring` 
+    files.
+
+We execute the example by doing the following:
+
+```bash
+cd myproject/
+
+docker run --rm -ti \
+  -v $PWD:/workspace \
+  -v $PWD/ceph:/etc/ceph \
+  -w /workspace \
+  ivotron/skyhookdm-py \
+    /workspace/scripts/example.py
+```
+
+The above mounts the `myproject/` folder in a `/workspace` folder 
+inside the container. It also mounts the `myproject/ceph` folder to 
+`/etc/ceph` which is where the skyhookdm-py library expects it. It 
+then invokes the `scripts/example.py` file.
+
+## Run in Kubernetes
+
+The `ivotron/skyhookdm-py` container requires Ceph configuration files 
+that can be passed as secrets. We first create these two secrets:
+
+```bash
+kubectl create secret generic mysecret \
+  --from-file=/path/to/ceph.conf \
+  --from-file=/path/to/ceph.client.admin.keyring
+```
+
+Once the secrets are created, the following executes the test:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mypod
+    image: ivotron/skyhookdm-py
+    command: 'python /path/to/script.py'
+    volumeMounts:
+    - name: ceph-config
+      mountPath: "/etc/ceph/"
+      readOnly: true
+  volumes:
+  - name: ceph-config
+    secret:
+      secretName: mysecret
+```
+
+In the above the `/path/to/script.py` needs to be updated to the 
+proper script.
