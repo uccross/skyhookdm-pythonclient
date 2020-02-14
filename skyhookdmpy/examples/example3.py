@@ -3,9 +3,9 @@ import sys
 from skyhookdmpy import SkyhookDM
 
 if len(sys.argv) > 1:
-    ip_or_hostname = sys.argv[1]
+    dask_server = sys.argv[1]
 else:
-    ip_or_hostname = 'localhost'
+    dask_server = 'localhost'
 
 # create pool
 pool = 'hepdatapool'
@@ -15,7 +15,7 @@ if pool not in cluster.list_pools():
     cluster.create_pool(pool)
 
 sk = SkyhookDM()
-sk.connect(ip_or_hostname)
+sk.connect(dask_server)
 urls = ['https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/nano_aod.root']
 sk.writeDataset(urls,'nanoexample')
 dst = sk.getDataset('nanoexample')

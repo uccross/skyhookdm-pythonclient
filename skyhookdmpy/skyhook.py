@@ -1,6 +1,7 @@
-from skyhookdmpy.skyhook_common import *
-# from skyhook_common import *
+import rados
 import struct
+
+from skyhookdmpy.skyhook_common import *
 
 
 class SkyhookDM:
@@ -11,16 +12,17 @@ class SkyhookDM:
         try:
             self.cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
             self.cluster.connect()
-            self.ioctx = self.cluster.open_ioctx('hepdatapool')
 
-        except Exception,e:
+        except Exception as e:
             print(str(e))
 
-    def connect(self, ip):
+    def connect(self, ip, ceph_pool_name):
         addr = ip+':8786'
         self.addr = addr
         client = Client(addr)
         self.client = client
+        self.ceph_pool = ceph_pool_name
+        self.ioctx = self.cluster.open_ioctx(ceph_pool_name)
 
     # Write the arrow table to Ceph
     # Do we need to serialize it?
@@ -29,7 +31,7 @@ class SkyhookDM:
     # Object namming
     # Merge object?
     # Split object?
-    # Submit to driver?  
+    # Submit to driver?
     def writeArrowTable(self, table, name):
        #Serialize arrow table to bytes
         batches = table.to_batches()
@@ -40,13 +42,13 @@ class SkyhookDM:
             writer.write_batch(batch)
         buff = sink.getvalue()
         buff_bytes = buff.to_pybytes()
-        
+
         # Write to the Ceph cluster
         self.ioctx.aio_write_full(name, buff_bytes)
         self.ioctx.set_xattr(name, 'size', str(len(buff_bytes)))
 
         return True
-        
+
 
     def writeDataset(self, path, dstname):
         def runOnDriver(path, dstname, addr):
@@ -62,7 +64,7 @@ class SkyhookDM:
     def getDataset(self, name):
         cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
         cluster.connect()
-        ioctx = cluster.open_ioctx('hepdatapool')
+        ioctx = cluster.open_ioctx(self.ceph_pool)
         size = ioctx.get_xattr(name, "size")
         data = ioctx.read(name, length = int(size))
         ioctx.close()
@@ -75,10 +77,10 @@ class SkyhookDM:
 
         dataset = Dataset(data['dataset_name'], data['size'], files)
         return dataset
-    
+
     def runQuery(self, obj, querystr):
         #limit just to 1 obj
-        command_template = '--wthreads 1 --qdepth 120 --query hep --pool hepdatapool --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --subpartitions 10'
+        command_template = '--wthreads 1 --qdepth 120 --query hep --pool {} --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --subpartitions 10'.format(self.ceph_pool)
 
 
         def generateQueryCommand(file, querystr):
@@ -86,7 +88,7 @@ class SkyhookDM:
             prefix = file.dataset + '#' + file.name + '#' +file.ROOTDirectory
             brs = querystr.split('project')[-1].split(',')
             obj_num = 0
-            
+
             for br in brs:
                 br = br.strip()
                 elems = br.split('.')
@@ -97,7 +99,7 @@ class SkyhookDM:
                     local_prefix = local_prefix + '#' + elem.strip()
                 obj_prefix = prefix + local_prefix + '#'
                 data_schema = ''
-                
+
                 # print(obj_prefix)
 
                 f_schema = file.getSchema()
@@ -109,7 +111,7 @@ class SkyhookDM:
                         if elems[i].strip() == ch_sche['name']:
                             f_schema = ch_sche
                             break
-                
+
                 obj_num = len(f_schema['children'])
 
                 for m in range(len(f_schema['children'])):
@@ -120,7 +122,7 @@ class SkyhookDM:
                         #limit the obj num to 1
                         obj_num = m
                         break
-                
+
                 if found:
                     cmd = command_template
                     data_schema = '0 4 0 0 EVENT_ID;' + f_schema['data_schema'] + ';'
@@ -132,7 +134,7 @@ class SkyhookDM:
                     cmd = cmd.replace('#startobj', str(obj_num))
                     cmds.append(cmd)
             return cmds
-        
+
 
 
         def exeQuery(command):
@@ -140,7 +142,7 @@ class SkyhookDM:
             import os
             result = os.popen(prog + command).read()
             return result
-            
+
 
         def _mergeTables(tables):
             bigtable = None
@@ -180,12 +182,12 @@ class SkyhookDM:
                     reader = pa.ipc.open_stream(stream)
                     for b in reader:
                         batches.append(b)
-                
+
                 #sort batches
                 def mykey(batch):
                     tb = pa.Table.from_batches([batch.slice(0,1)])
                     return tb.columns[0][0].as_py()
-                
+
                 batches = sorted(batches,key=mykey)
 
                 table = pa.Table.from_batches(batches)
@@ -195,11 +197,11 @@ class SkyhookDM:
 
             return res
 
-                
+
         if 'File' in str(obj):
             res = fileQuery(obj, querystr)
             return res
-        
+
         if 'Dataset' in str(obj):
 
             rtfiles = obj.getFiles()
@@ -213,7 +215,7 @@ class SkyhookDM:
                     future = self.client.submit(exeQuery, command)
                     futures.append(future)
                 futures_set.append(futures)
-            
+
             for futures in futures_set:
 
                 tablestreams = self.client.gather(futures)
@@ -236,12 +238,12 @@ class SkyhookDM:
                         reader = pa.ipc.open_stream(stream)
                         for b in reader:
                             batches.append(b)
-                    
+
                     #sort batches
                     def mykey(batch):
                         tb = pa.Table.from_batches([batch.slice(0,1)])
                         return tb.columns[0][0].as_py()
-                    
+
                     batches = sorted(batches,key=mykey)
 
                     table = pa.Table.from_batches(batches)
@@ -251,11 +253,11 @@ class SkyhookDM:
                 global_tables.append(res)
 
             return global_tables
-        
-        return None
-    
 
-            
+        return None
+
+
+
 
 
 
