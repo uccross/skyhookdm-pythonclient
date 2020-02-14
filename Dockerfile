@@ -8,5 +8,9 @@ RUN apt update && \
 
 COPY . /app
 
-RUN pip --no-cache-dir install /app && \
+RUN pip --no-cache-dir install /app requests && \
     rm -r /app
+
+COPY entrypoint.sh /
+
+ENTRYPOINT ["/entrypoint.sh"]

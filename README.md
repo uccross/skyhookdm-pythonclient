@@ -162,7 +162,7 @@ myproject/
 
 where:
 
-  * `scripts/` is we store Python scripts we want to execute.
+  * `scripts/` is where we store scripts we want to execute.
   * `ceph/` contains `ceph.conf` and `ceph.client.admin.keyring` 
     files.
 
@@ -172,17 +172,20 @@ We execute the example by doing the following:
 cd myproject/
 
 docker run --rm -ti \
-  -v $PWD:/workspace \
+  -v $PWD:/ws \
   -v $PWD/ceph:/etc/ceph \
-  -w /workspace \
-  ivotron/skyhookdm-py \
-    /workspace/scripts/example.py
+  -w /ws \
+  uccross/skyhookdm-py \
+    /ws/scripts/myapp.py
 ```
 
-The above mounts the `myproject/` folder in a `/workspace` folder 
-inside the container. It also mounts the `myproject/ceph` folder to 
-`/etc/ceph` which is where the skyhookdm-py library expects it. It 
-then invokes the `scripts/example.py` file.
+The above mounts the `myproject/` folder in a `/ws` folder inside the 
+container. It also mounts the `myproject/ceph` folder to `/etc/ceph` 
+which is where the skyhookdm-py library expects it. It then invokes 
+the `scripts/myapp.py` file that we need to write ourselves. Take a 
+look at the [`examples/`](./skyhookdmpy/examples) folder for examples 
+of how to write applications that use the Skyhook python client 
+library.
 
 ## Run in Kubernetes
 
@@ -218,4 +221,15 @@ spec:
 ```
 
 In the above the `/path/to/script.py` needs to be updated to the 
-proper script.
+proper script that must already exist inside the image we are using, 
+so you could probably build an image on top of the one we provide with 
+your scripts. For example:
+
+```Dockerfile
+FROM uccross/skyhookdm-py
+
+COPY myscript.py /
+```
+
+And reference the above `myscript.py` file in the Pod definition file 
+instead of `/path/to/script.py`.
