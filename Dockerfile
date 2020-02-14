@@ -11,6 +11,4 @@ COPY . /app
 RUN pip --no-cache-dir install /app requests && \
     rm -r /app
 
-COPY entrypoint.sh /
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["python"]

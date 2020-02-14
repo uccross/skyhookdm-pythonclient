@@ -179,7 +179,7 @@ docker run --rm -ti \
     /ws/scripts/myapp.py
 ```
 
-The above mounts the `myproject/` folder in a `/ws` folder inside the 
+The above mounts the `myproject/` folder in a `/ws` (workspace) folder inside the 
 container. It also mounts the `myproject/ceph` folder to `/etc/ceph` 
 which is where the skyhookdm-py library expects it. It then invokes 
 the `scripts/myapp.py` file that we need to write ourselves. Take a 
@@ -209,7 +209,7 @@ spec:
   containers:
   - name: mypod
     image: ivotron/skyhookdm-py
-    command: 'python /path/to/script.py'
+    args: ['/path/to/script.py']
     volumeMounts:
     - name: ceph-config
       mountPath: "/etc/ceph/"
@@ -221,7 +221,7 @@ spec:
 ```
 
 In the above the `/path/to/script.py` needs to be updated to the 
-proper script that must already exist inside the image we are using, 
+proper script that must already exist inside the image being referenced,
 so you could probably build an image on top of the one we provide with 
 your scripts. For example:
 
