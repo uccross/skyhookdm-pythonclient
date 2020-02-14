@@ -8,14 +8,14 @@ else:
     dask_server = 'localhost'
 
 # create pool
-pool = 'hepdatapool'
+ceph_pool = 'hepdatapool'
 cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
 cluster.connect()
-if pool not in cluster.list_pools():
-    cluster.create_pool(pool)
+if ceph_pool not in cluster.list_pools():
+    cluster.create_pool(ceph_pool)
 
 sk = SkyhookDM()
-sk.connect(dask_server)
+sk.connect(dask_server, ceph_pool)
 urls = ['https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/nano_aod.root']
 sk.writeDataset(urls,'nanoexample')
 dst = sk.getDataset('nanoexample')
