@@ -51,7 +51,7 @@ class SkyhookDM:
 
 
     def writeDataset(self, path, dstname):
-        def runOnDriver(path, dstname, addr, poolname):
+        def runOnDriver(path, dstname, poolname, addr ):
             # import skyhook_driver as sd
             from skyhookdmpy import skyhook_driver as sd
             res = sd.writeDataset(path, dstname, addr, poolname)
