@@ -57,7 +57,7 @@ class SkyhookDM:
             res = sd.writeDataset(path, dstname, addr)
             return res
 
-        fu = self.client.submit(runOnDriver, path, dstname, self.addr)
+        fu = self.client.submit(runOnDriver, path, dstname, self.ceph_pool, self.addr)
         result = fu.result()
         return result
 
