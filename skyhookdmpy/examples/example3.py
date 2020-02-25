@@ -13,7 +13,7 @@ elif len(sys.argv) == 2:
 else:
     dask_server = 'localhost'
     os.system('dask-scheduler --host localhost &')
-    os.systme('dask-worker localhost:8786 --nthreads 20 &')
+    os.system('dask-worker localhost:8786 --nthreads 20 &')
     # wait for Dask to start
     time.sleep(5)
 print('Using {} as dask server hostname'.format(dask_server))
