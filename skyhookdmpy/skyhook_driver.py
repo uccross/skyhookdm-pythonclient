@@ -255,7 +255,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
         #stat_json = json.dumps(stat_res_dict)
         #build objects and generate json file which dipicts the logical structure
         tree = RootNode(root_dir.name.decode("utf-8"), str(type(root_dir)).split('.')[-1].split('\'')[0], None, None, 0, None)
-        growTree(dstname + '#' + filename, tree, root_dir, ceph_pool)
+        growTree(dstname + '#' + filename, tree, root_dir)
         logic_schema = tree_traversal(tree)
         os.remove(filename)
         res = [stat_res_dict, logic_schema]
