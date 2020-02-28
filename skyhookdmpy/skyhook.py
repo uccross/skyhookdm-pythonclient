@@ -80,7 +80,7 @@ class SkyhookDM:
 
     def runQuery(self, obj, querystr):
         #limit just to 1 obj
-        command_template = '--wthreads 1 --qdepth 120 --query hep --pool {} --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --subpartitions 10'.format(self.ceph_pool)
+        command_template = '--wthreads 1 --qdepth 120 --query hep --pool {} --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --table-name \"#tablename\" --subpartitions 10'.format(self.ceph_pool)
 
 
         def generateQueryCommand(file, querystr):
@@ -92,7 +92,7 @@ class SkyhookDM:
             for br in brs:
                 br = br.strip()
                 elems = br.split('.')
-                br_name = elems[-1]
+                br_name = elems[-1]  
                 elems.remove(br_name)
                 local_prefix = ''
                 for elem in elems:
@@ -129,6 +129,7 @@ class SkyhookDM:
                     cmd = cmd.replace('#dataschema', data_schema)
                     cmd = cmd.replace('#colname', 'event_id,'+ br_name.strip())
                     cmd = cmd.replace('#prefix', obj_prefix)
+                    cmd = cmd.replace('#tablename', br_name.strip())
                     #limit the obj num to 1
                     cmd = cmd.replace('#objnum', str(1))
                     cmd = cmd.replace('#startobj', str(obj_num))

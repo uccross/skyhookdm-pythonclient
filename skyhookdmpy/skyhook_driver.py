@@ -48,7 +48,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
         from collections import OrderedDict
         # change the name here to object_id which is the node_id
         # objname = branch.name.decode("utf-8")
-        objname = '.' + str(obj_id)
+        objname = '.' + str(branch.name) + '.' + str(obj_id)
         parent = subnode.parent
         while parent is not None:
             objname = parent.name + '#' + objname
@@ -160,7 +160,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
                     writer.write_batch(batch)
                     buff = sink.getvalue()
                     buff_bytes = buff.to_pybytes()
-                    ioctx.aio_write_full(objname + '.' + str(i), buff_bytes)
+                    ioctx.aio_write_full(x + '.' + str(i), buff_bytes)
                     ioctx.set_xattr(objname + '.' + str(i), 'size', str(len(buff_bytes)))
                     i += 1
                 ioctx.close()
