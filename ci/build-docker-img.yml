@@ -1,0 +1,11 @@
+steps:
+- uses: docker://gcr.io/cloud-builders/docker:18.09.6
+  args: ['build', '-t', 'uccross/skyhookdm-py', '.']
+
+- uses: docker://gcr.io/cloud-builders/docker:18.09.6
+  runs: bash
+  args: [-c,
+    'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
+     docker push uccross/skyhookdm-py'
+  ]
+  secrets: [DOCKER_USER, DOCKER_PASSWORD]
