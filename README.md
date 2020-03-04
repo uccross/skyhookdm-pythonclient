@@ -185,7 +185,7 @@ which is where the skyhookdm-py library expects it. It then invokes
 the `scripts/myapp.py` file that we need to write ourselves. Take a 
 look at the [`examples/`](./skyhookdmpy/examples) folder for examples 
 of how to write applications that use the Skyhook python client 
-library.
+library. Example3.py is ready to run. 
 
 ## Run in Kubernetes
 
