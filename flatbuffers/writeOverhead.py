@@ -45,7 +45,7 @@ def write_tables(input_file, ceph_pool):
         buff = sink.getvalue()
         buff_bytes = buff.to_pybytes()
 
-        ioctx.write_full('table' + str(i), buff_bytes)
+        ioctx.aio_write_full('table' + str(i), buff_bytes)
 
     stop_time = time.time()*1000
 
@@ -103,7 +103,7 @@ def write_tables_with_wrapper(input_file, ceph_pool):
 
         obj_with_wrapper = add_FBmeta(buff_bytes)
 
-        ioctx.write_full('table_with_wrapper' + str(i), str(obj_with_wrapper))
+        ioctx.aio_write_full('table_with_wrapper' + str(i), str(obj_with_wrapper))
 
     stop_time = time.time()*1000
     ioctx.close()
