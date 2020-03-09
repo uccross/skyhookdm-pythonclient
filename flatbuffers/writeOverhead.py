@@ -26,19 +26,15 @@ def write_tables(input_file, ceph_pool):
     cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
     cluster.connect()
     ioctx = cluster.open_ioctx(ceph_pool)
-#     f = open(input_file, 'rb')
-#     buf = f.read()
-
-#     reader = pa.ipc.open_stream(buf)
-#     table = pa.Table.from_batches(reader)
+    
+    f = open(input_file, 'rb')
+    buf = f.read()
+    reader = pa.ipc.open_stream(buf)
+    table = pa.Table.from_batches(reader)
 
     start_time = time.time()*1000
 
     for i in range(100):
-        f = open(input_file, 'rb')
-        buf = f.read()
-        reader = pa.ipc.open_stream(buf)
-        table = pa.Table.from_batches(reader)
         
         batches = table.to_batches()
         sink = pa.BufferOutputStream()
@@ -50,7 +46,7 @@ def write_tables(input_file, ceph_pool):
         buff = sink.getvalue()
         buff_bytes = buff.to_pybytes()
 
-        ioctx.aio_write_full('table' + str(i), buff_bytes)
+        ioctx.write_full('table' + str(i), buff_bytes)
 
     stop_time = time.time()*1000
 
@@ -83,20 +79,15 @@ def write_tables_with_wrapper(input_file, ceph_pool):
     cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
     cluster.connect()
     ioctx = cluster.open_ioctx(ceph_pool)
-#     f = open(input_file, 'rb')
-#     buf = f.read()
-
-#     reader = pa.ipc.open_stream(buf)
-#     table = pa.Table.from_batches(reader)    
+    
+    f = open(input_file, 'rb')
+    buf = f.read()
+    reader = pa.ipc.open_stream(buf)
+    table = pa.Table.from_batches(reader)    
 
     start_time = time.time()*1000
 
     for i in range(100):
-        f = open(input_file, 'rb')
-        buf = f.read()
-        reader = pa.ipc.open_stream(buf)
-        table = pa.Table.from_batches(reader) 
-        
         sche_meta = {}
         sche_meta['0'] = bytes('0 4 0 0 EVENT_ID;' + str(i) + ' ' + str('integer') + ' 0 1 ' + 'TestColumn')
         schema = table.schema.with_metadata(sche_meta)
@@ -113,7 +104,7 @@ def write_tables_with_wrapper(input_file, ceph_pool):
 
         obj_with_wrapper = add_FBmeta(buff_bytes)
 
-        ioctx.aio_write_full('table_with_wrapper' + str(i), str(obj_with_wrapper))
+        ioctx.write_full('table_with_wrapper' + str(i), str(obj_with_wrapper))
 
     stop_time = time.time()*1000
     ioctx.close()
