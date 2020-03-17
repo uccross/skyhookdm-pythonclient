@@ -1,6 +1,6 @@
 from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
-sk.connect('localhost')
+sk.connect('localhost', 'hepdatapool')
 urls = ['http://opendata.cern.ch/record/12352/files/VBF_HToTauTau.root']
 sk.writeDataset(urls,'nanodst')
 dst = sk.getDataset('nanodst')
