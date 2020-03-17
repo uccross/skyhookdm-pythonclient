@@ -1,6 +1,6 @@
 from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
-sk.connect('localhost')
+sk.connect('localhost', 'hepdatapool')
 dst = sk.getDataset('aod')
 f = dst.getFiles()[0]
 table = sk.runQuery(f,'select *, project Events;75.Muon_phi')
