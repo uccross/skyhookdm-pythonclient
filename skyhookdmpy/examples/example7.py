@@ -8,7 +8,7 @@ from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
 
 # Connect to the skyhook driver given the IP of the skyhook driver.
-sk.connect('ip_address')
+sk.connect('ip_address', 'hepdatapool')
 
 # Create a panda dataframe with one column named 'a'
 df = pd.DataFrame({"a": [1, 2, 3]})
