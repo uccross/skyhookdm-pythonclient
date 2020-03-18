@@ -3,6 +3,37 @@
 # from skyhook_common import *
 from skyhookdmpy.skyhook_common import *
 
+def writeArrowTable(buff_bytes, name,  ceph_pool):
+    # Write to the Ceph cluster
+    try: 
+        cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
+        cluster.connect()
+        ioctx = cluster.open_ioctx(ceph_pool)
+        ioctx.aio_write_full(name, buff_bytes)
+        ioctx.set_xattr(name, 'size', str(len(buff_bytes)))
+        ioctx.close()
+        cluster.shutdown()
+
+    except Exception as e:
+        print(str(e))
+
+    return True
+
+def getDataset(dstname, ceph_pool):
+    try:
+        cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
+        cluster.connect()
+        ioctx = cluster.open_ioctx(ceph_pool)
+        size = ioctx.get_xattr(dstname, "size")
+        data = ioctx.read(dstname, length = int(size))
+        ioctx.close()
+        cluster.shutdown()
+
+    except Exception as e:
+        print(str(e))
+
+    return data
+
 def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
 
     #internal functions

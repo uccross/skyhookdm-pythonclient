@@ -1,20 +1,17 @@
-import rados
 import struct
-
 from skyhookdmpy.skyhook_common import *
-
 
 class SkyhookDM:
     def __init__(self):
         self.client = None
         self.addr = None
 
-        try:
-            self.cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
-            self.cluster.connect()
+        # try:
+        #     self.cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
+        #     self.cluster.connect()
 
-        except Exception as e:
-            print(str(e))
+        # except Exception as e:
+        #     print(str(e))
 
     def connect(self, ip, ceph_pool_name):
         addr = ip+':8786'
@@ -22,7 +19,7 @@ class SkyhookDM:
         client = Client(addr)
         self.client = client
         self.ceph_pool = ceph_pool_name
-        self.ioctx = self.cluster.open_ioctx(ceph_pool_name)
+        # self.ioctx = self.cluster.open_ioctx(ceph_pool_name)
 
     # Write the arrow table to Ceph
     # Do we need to serialize it?
@@ -33,7 +30,13 @@ class SkyhookDM:
     # Split object?
     # Submit to driver?
     def writeArrowTable(self, table, name):
-       #Serialize arrow table to bytes
+
+        def runOnDriver(buff_bytes, name,  ceph_pool):
+            from skyhookdmpy import skyhook_driver as sd
+            res = sd.writeArrowTable(buff_bytes, name, ceph_pool)
+            return res
+
+        #Serialize arrow table to bytes
         batches = table.to_batches()
         sink = pa.BufferOutputStream()
         writer = pa.RecordBatchStreamWriter(sink, table.schema)
@@ -43,11 +46,10 @@ class SkyhookDM:
         buff = sink.getvalue()
         buff_bytes = buff.to_pybytes()
 
-        # Write to the Ceph cluster
-        self.ioctx.aio_write_full(name, buff_bytes)
-        self.ioctx.set_xattr(name, 'size', str(len(buff_bytes)))
+        fu = self.client.submit(runOnDriver, buff_bytes, name, self.ceph_pool)
+        result = fu.result()
 
-        return True
+        return result
 
 
     def writeDataset(self, path, dstname):
@@ -62,14 +64,15 @@ class SkyhookDM:
         return result
 
     def getDataset(self, name):
-        cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
-        cluster.connect()
-        ioctx = cluster.open_ioctx(self.ceph_pool)
-        size = ioctx.get_xattr(name, "size")
-        data = ioctx.read(name, length = int(size))
-        ioctx.close()
-        cluster.shutdown()
-        data = json.loads(data)
+        def runOnDriver(name, ceph_pool):
+            from skyhookdmpy import skyhook_driver as sd
+            res = sd.getDataset(name, ceph_pool)
+            return res
+
+        fu = self.client.submit(runOnDriver, name, self.ceph_pool)
+        result = fu.result()
+        
+        data = json.loads(result)
         files = []
         for item in data['files']:
             file = File(item['name'], item['file_attributes'], item['file_schema'], name, item['ROOTDirectory'])
@@ -139,7 +142,7 @@ class SkyhookDM:
 
 
         def exeQuery(command):
-            prog = '/mnt/sda4/skyhookdm-ceph/build/bin/run-query '
+            prog = '/mnt/sdb/skyhookdm-ceph/build/bin/run-query '
             import os
             result = os.popen(prog + command).read()
             return result
