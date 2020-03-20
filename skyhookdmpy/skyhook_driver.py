@@ -15,7 +15,8 @@ def writeArrowTable(buff_bytes, name,  ceph_pool):
         cluster.shutdown()
 
     except Exception as e:
-        print(str(e))
+        return str(e)
+
 
     return True
 
@@ -30,7 +31,7 @@ def getDataset(dstname, ceph_pool):
         cluster.shutdown()
 
     except Exception as e:
-        print(str(e))
+        return str(e)
 
     return data
 
