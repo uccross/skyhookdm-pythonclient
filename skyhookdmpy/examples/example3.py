@@ -1,8 +1,8 @@
 from skyhookdmpy import SkyhookDM
 sk = SkyhookDM()
 
-#please change the ip address of 0.0.0.0 to the correct ip_address before run this example.
-sk.connect('0.0.0.0','hepdatapool')
+#please change the ip address of ip_address to the correct ip_address of Skyhook_Driver before run this example.
+sk.connect('ip_address','hepdatapool')
 
 # write data
 urls = ['https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/nano_aod.root']
