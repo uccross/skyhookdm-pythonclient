@@ -8,6 +8,8 @@ Note: Cloning this repo is not necessary. Runing the scripts is enough. The scri
 
 </br>
 </br>
+
+
 **=========================== SkyhookDM Python Client Architecture ===========================**
 
 <p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/architecture.png" width="45%"></a></p>
