@@ -6,9 +6,6 @@
 
 Note: Cloning this repo is not necessary. Runing the scripts is enough. The scripts use 'pip' to install skyhookdmpy and other dependencies which can't be installed via 'pip' commands. 
 
-</br>
-</br>
-
 
 **=========================== SkyhookDM Python Client Architecture ===========================**
 
