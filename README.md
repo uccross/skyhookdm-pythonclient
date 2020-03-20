@@ -32,11 +32,63 @@ Note: Cloning this repo is not necessary. Runing the scripts is enough. The scri
     * Operates within objects.
 
 
+# The Cient is containerized:
+
+## Run in Docker
+
+Assuming we have the following folder structure:
+
+```
+myproject/
+└── example.py
+```
+
+We execute the example by doing the following:
+
+```bash
+cd myproject/
+
+docker run --rm -ti -v $PWD:/ws -w /ws uccross/skyhookdm-py /ws/myapp.py
+```
+
+The above mounts the `myproject/` folder in a `/ws` (workspace) folder 
+inside the container. It then invokes the `example.py` file that we 
+need to write ourselves. Take a look at the 
+[`examples/`](./skyhookdmpy/examples) folder for examples of how to 
+write applications that use the Skyhook python client library.
+
+## Run in Kubernetes
+
+The following executes the test:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: skyhook-client-container
+    image: ivotron/skyhookdm-py
+    args: ['/path/to/script.py']
+```
+
+In the above the `/path/to/script.py` needs to be updated to the 
+proper script that must already exist inside the image being referenced,
+so you could probably build an image on top of the one we provide with 
+your scripts. For example:
+
+```Dockerfile
+FROM uccross/skyhookdm-py
+
+COPY myscript.py /
+```
+
+And reference the above `myscript.py` file in the Pod definition file 
+instead of `/path/to/script.py`.
+
+
 **========================= More Details about SkyhookDM Python APIs =========================**
-
-</br>
-</br>
-
 **Skyhook_common:**
 
 This module defines the classes such as Dataset, File, RootNode  which should be understood by both the modules of SkyhookDM and Skyhook_driver.  
@@ -169,56 +221,3 @@ table = sk.runQuery(f,'select event_id>5, project Events;75.Muon_phi')
 
 tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;75.Muon_phi,Events;75.Muon_mass')
 ```
-
-## Run in Docker
-
-Assuming we have the following folder structure:
-
-```
-myproject/
-└── example.py
-```
-
-We execute the example by doing the following:
-
-```bash
-cd myproject/
-
-docker run --rm -ti -v $PWD:/ws -w /ws uccross/skyhookdm-py /ws/myapp.py
-```
-
-The above mounts the `myproject/` folder in a `/ws` (workspace) folder 
-inside the container. It then invokes the `example.py` file that we 
-need to write ourselves. Take a look at the 
-[`examples/`](./skyhookdmpy/examples) folder for examples of how to 
-write applications that use the Skyhook python client library.
-
-## Run in Kubernetes
-
-The following executes the test:
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: mypod
-spec:
-  containers:
-  - name: skyhook-client-container
-    image: ivotron/skyhookdm-py
-    args: ['/path/to/script.py']
-```
-
-In the above the `/path/to/script.py` needs to be updated to the 
-proper script that must already exist inside the image being referenced,
-so you could probably build an image on top of the one we provide with 
-your scripts. For example:
-
-```Dockerfile
-FROM uccross/skyhookdm-py
-
-COPY myscript.py /
-```
-
-And reference the above `myscript.py` file in the Pod definition file 
-instead of `/path/to/script.py`.
