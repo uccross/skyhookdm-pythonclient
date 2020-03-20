@@ -8,6 +8,30 @@ Note: Cloning this repo is not necessary. Runing the scripts is enough. The scri
 
 </br>
 </br>
+**=========================== SkyhookDM Python Client Architecture ===========================**
+
+<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/architecture.png" width="45%"></a></p>
+
+* Client: 
+    * Submits data read/write/query requests to Skyhook-Driver.
+
+* Skyhook-Driver:  
+    * Schedules dataset writing tasks.
+    * Schedules data processing tasks.
+    * Aggregates/summarizes the results returns by workers if necessary.
+
+* Worker:
+    * Partitions datasets into objects and write them to Skyhook.
+    * Operate on sets of objects.
+    * Calls Skyhook functions to process the data remotely.
+    * Further processes result returned by Skyhook if necessary.
+
+* Ceph/RADOS with Skyhook-Extensions:
+    * Stores/lays out the objects.
+    * Creates indices/metadata. 
+    * Processes data queries.
+    * Operates within objects.
+
 
 **========================= More Details about SkyhookDM Python APIs =========================**
 
