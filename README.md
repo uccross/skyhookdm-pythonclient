@@ -7,6 +7,8 @@
 Note: Cloning this repo is not necessary. Runing the scripts is enough. The scripts use 'pip' to install skyhookdmpy and other dependencies which can't be installed via 'pip' commands. 
 
 
+
+
 **=========================== SkyhookDM Python Client Architecture ===========================**
 
 <p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/architecture.png" width="45%"></a></p>
@@ -32,9 +34,9 @@ Note: Cloning this repo is not necessary. Runing the scripts is enough. The scri
     * Operates within objects.
 
 
-# The Cient is containerized:
+### The Cient is containerized:
 
-## Run in Docker
+#### Run in Docker
 
 Assuming we have the following folder structure:
 
@@ -57,7 +59,7 @@ need to write ourselves. Take a look at the
 [`examples/`](./skyhookdmpy/examples) folder for examples of how to 
 write applications that use the Skyhook python client library.
 
-## Run in Kubernetes
+#### Run in Kubernetes
 
 The following executes the test:
 
@@ -86,6 +88,8 @@ COPY myscript.py /
 
 And reference the above `myscript.py` file in the Pod definition file 
 instead of `/path/to/script.py`.
+
+
 
 
 **========================= More Details about SkyhookDM Python APIs =========================**
