@@ -179,52 +179,26 @@ Assuming we have the following folder structure:
 
 ```
 myproject/
-├── ceph/
-│   ├── ceph.client.admin.keyring
-│   └── ceph.conf
-└── scripts/
-    └── example.py
+└── example.py
 ```
-
-where:
-
-  * `scripts/` is where we store scripts we want to execute.
-  * `ceph/` contains `ceph.conf` and `ceph.client.admin.keyring` 
-    files.
 
 We execute the example by doing the following:
 
 ```bash
 cd myproject/
 
-docker run --rm -ti \
-  -v $PWD:/ws \
-  -v $PWD/ceph:/etc/ceph \
-  -w /ws \
-  uccross/skyhookdm-py \
-    /ws/scripts/myapp.py
+docker run --rm -ti -v $PWD:/ws -w /ws uccross/skyhookdm-py /ws/myapp.py
 ```
 
-The above mounts the `myproject/` folder in a `/ws` (workspace) folder inside the 
-container. It also mounts the `myproject/ceph` folder to `/etc/ceph` 
-which is where the skyhookdm-py library expects it. It then invokes 
-the `scripts/myapp.py` file that we need to write ourselves. Take a 
-look at the [`examples/`](./skyhookdmpy/examples) folder for examples 
-of how to write applications that use the Skyhook python client 
-library. Example3.py is ready to run. 
+The above mounts the `myproject/` folder in a `/ws` (workspace) folder 
+inside the container. It then invokes the `example.py` file that we 
+need to write ourselves. Take a look at the 
+[`examples/`](./skyhookdmpy/examples) folder for examples of how to 
+write applications that use the Skyhook python client library.
 
 ## Run in Kubernetes
 
-The `ivotron/skyhookdm-py` container requires Ceph configuration files 
-that can be passed as secrets. We first create these two secrets:
-
-```bash
-kubectl create secret generic mysecret \
-  --from-file=/path/to/ceph.conf \
-  --from-file=/path/to/ceph.client.admin.keyring
-```
-
-Once the secrets are created, the following executes the test:
+The following executes the test:
 
 ```yaml
 apiVersion: v1
@@ -233,17 +207,9 @@ metadata:
   name: mypod
 spec:
   containers:
-  - name: mypod
+  - name: skyhook-client-container
     image: ivotron/skyhookdm-py
     args: ['/path/to/script.py']
-    volumeMounts:
-    - name: ceph-config
-      mountPath: "/etc/ceph/"
-      readOnly: true
-  volumes:
-  - name: ceph-config
-    secret:
-      secretName: mysecret
 ```
 
 In the above the `/path/to/script.py` needs to be updated to the 
