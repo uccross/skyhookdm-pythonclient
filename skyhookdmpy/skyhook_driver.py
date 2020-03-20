@@ -2,6 +2,7 @@
 #Copy to /usr/lib/python2.7/ so that it can be imported anywhere
 # from skyhook_common import *
 from skyhookdmpy.skyhook_common import *
+import rados
 
 def writeArrowTable(buff_bytes, name,  ceph_pool):
     # Write to the Ceph cluster
