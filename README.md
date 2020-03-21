@@ -71,7 +71,7 @@ metadata:
 spec:
   containers:
   - name: skyhook-client-container
-    image: ivotron/skyhookdm-py
+    image: uccross/skyhookdm-py
     args: ['/path/to/script.py']
 ```
 
