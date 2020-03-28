@@ -48,7 +48,7 @@ class SkyhookDM:
 
         fu = self.client.submit(runOnDriver, buff_bytes, name, self.ceph_pool)
         result = fu.result()
-
+        
         return result
 
 
@@ -73,9 +73,9 @@ class SkyhookDM:
         result = fu.result()
         
         data = json.loads(result)
-        files = []
+        files = [] 
         for item in data['files']:
-            file = File(item['name'], item['file_attributes'], item['file_schema'], name, item['ROOTDirectory'])
+            file = File(item['name'], item['file_attributes'], item['file_schema'], name, str(item['ROOTDirectory']))
             files.append(file)
 
         dataset = Dataset(data['dataset_name'], data['size'], files)
@@ -88,7 +88,7 @@ class SkyhookDM:
 
         def generateQueryCommand(file, querystr):
             cmds = []
-            prefix = file.dataset + '#' + file.name + '#' +file.ROOTDirectory
+            prefix = file.dataset + '#' + str(file.name) + '#' + str(file.ROOTDirectory)
             brs = querystr.split('project')[-1].split(',')
             obj_num = 0
 
@@ -143,9 +143,29 @@ class SkyhookDM:
 
         def exeQuery(command):
             prog = '/mnt/sdb/skyhookdm-ceph/build/bin/run-query '
-            import os
-            result = os.popen(prog + command).read()
-            return result
+            
+            import execnet
+            import json
+
+            def call_python_version(cmd):
+                gw = execnet.makegateway("popen//python=python2.7")
+                channel = gw.remote_exec("""
+                    import os
+                    import json
+                    import struct
+                    result = os.popen(channel.receive()).read()
+                    result = struct.unpack('{}B'.format(len(result)), result)
+                    result = list(result)
+                    result = json.dumps(result)
+                    channel.send(result)
+                    """)
+                channel.send(cmd)
+                return channel.receive()
+
+            result = call_python_version(prog + command)
+        
+            result = json.loads(result)
+            return bytes(result)
 
 
         def _mergeTables(tables):
@@ -259,7 +279,6 @@ class SkyhookDM:
             return global_tables
 
         return None
-
 
 
 

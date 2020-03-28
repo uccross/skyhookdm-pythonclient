@@ -261,7 +261,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
         output["classtype"] = str(root.classtype)
         output['datatype'] = str(root.datatype)
         output['node_id'] = str(root.node_id)
-        output['data_schema'] = root.data_schema
+        output['data_schema'] = str(root.data_schema)
         output["children"] = []
 
         for node in children:
@@ -279,11 +279,11 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
 
         stat_res = os.stat(filename)
         stat_res_dict = {}
-        stat_res_dict['size'] = stat_res.st_size
-        stat_res_dict['last access time'] = stat_res.st_atime
-        stat_res_dict['last modified time'] = stat_res.st_mtime
-        stat_res_dict['last changed time'] = stat_res.st_ctime
-        stat_res_dict['name'] = filename
+        stat_res_dict['size'] = str(stat_res.st_size)
+        stat_res_dict['last access time'] = str(stat_res.st_atime)
+        stat_res_dict['last modified time'] = str(stat_res.st_mtime)
+        stat_res_dict['last changed time'] = str(stat_res.st_ctime)
+        stat_res_dict['name'] = str(filename)
 
         #stat_json = json.dumps(stat_res_dict)
         #build objects and generate json file which dipicts the logical structure
@@ -320,7 +320,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
     for r_file in file_list:
         file_meta = {}
         file_meta['name'] = r_file
-        file_meta['ROOTDirectory'] = uproot.open(r_file).name
+        file_meta['ROOTDirectory'] = uproot.open(r_file).name.decode("utf-8")
         #read the file attributes based on the stat() info
         # stat_res = os.stat(join(path, r_file))
         # stat_res_dict = {}
@@ -359,8 +359,8 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
     cluster.connect()
     ioctx = cluster.open_ioctx(ceph_pool)
     output = json.dumps(metadata,indent=4)
-    ioctx.write_full(dstname, output)
-    ioctx.set_xattr(dstname, 'size', str(len(output)))
+    ioctx.write_full(dstname, bytes(output,'utf-8'))
+    ioctx.set_xattr(dstname, 'size', bytes(str(len(bytes(output,'utf-8'))),'utf-8'))
     ioctx.close()
     cluster.shutdown()
     # with open('/users/xweichu/projects/pool/' + dstname, 'w') as outfile:
