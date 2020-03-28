@@ -147,7 +147,7 @@ class SkyhookDM:
             import execnet
             import json
 
-            def call_python_version(cmd):
+            def talk_to_skyhook_v2(cmd):
                 gw = execnet.makegateway("popen//python=python2.7")
                 channel = gw.remote_exec("""
                     import os
@@ -162,7 +162,7 @@ class SkyhookDM:
                 channel.send(cmd)
                 return channel.receive()
 
-            result = call_python_version(prog + command)
+            result = talk_to_skyhook_v2(prog + command)
         
             result = json.loads(result)
             return bytes(result)
