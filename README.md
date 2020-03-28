@@ -71,7 +71,7 @@ metadata:
 spec:
   containers:
   - name: skyhook-client-container
-    image: ivotron/skyhookdm-py
+    image: uccross/skyhookdm-py
     args: ['/path/to/script.py']
 ```
 
@@ -154,7 +154,7 @@ _Classes_:
 ```python
 # import the lib
 
-from skyhook import SkyhookDM
+from skyhookdmpy import SkyhookDM
 
 # create a new SkyhookDM object
 
@@ -199,7 +199,7 @@ sk.writeDataset(urls,'demodst')
 ```python
 # import the lib
 
-from skyhook import SkyhookDM
+from skyhookdmpy import SkyhookDM
 
 # create a new SkyhookDM object
 
