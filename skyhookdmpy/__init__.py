@@ -1,3 +1,3 @@
-from skyhook import SkyhookDM
-import skyhook_common
-# import skyhook_driver
+from skyhookdmpy.skyhook import SkyhookDM
+import skyhookdmpy.skyhook_common
+import skyhookdmpy.skyhook_driver

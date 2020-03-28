@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'skyhookdmpy',         # How you named your package folder (MyLib)
   packages = ['skyhookdmpy'],   # Chose the same as "name"
-  version = '0.3.4',      # Start with a small number and increase it with every change you make
+  version = '0.3.5',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Python client of Skyhook for Ceph',   # Give a short description about your library
   author = 'Xiaowei Chu',                   # Type in your name
@@ -18,6 +18,7 @@ setup(
           'wget',
           'backports.lzma',
           'dask[complete]',
+          'execnet'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
