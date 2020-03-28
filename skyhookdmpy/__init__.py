@@ -1,3 +1,2 @@
 from skyhookdmpy.skyhook import SkyhookDM
 import skyhookdmpy.skyhook_common
-import skyhookdmpy.skyhook_driver
