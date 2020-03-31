@@ -1,19 +1,19 @@
 **Setup SkyhookDM Driver** (suppose that you have the Skyhook Cloudlab expeirment running):
 
-* Run the script of "[setup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/setup.sh)" to check and install dependencies and create the required ceph pool.
+* Run the script of "[setup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/miscellaneous/setup.sh)" to check and install dependencies and create the required ceph pool.
 * Logout the ssh session and login again. 
-* Run the script of "[startup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/startup.sh)" and you're ready to go.
+* Run the script of "[startup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/miscellaneous/startup.sh)" and you're ready to go.
 
 Note: Cloning this repo is not necessary. Runing the scripts is enough. The scripts use 'pip' to install skyhookdmdriver and other dependencies which can't be installed via 'pip' commands. 
 
-* One the client, run 'pip install skyhookdmclient' to install the client library. You can start with some examples(ref) here.
+* One the client, run 'pip install skyhookdmclient' to install the client library. You can start with some [`examples`](./client/skyhookdmclient/examples) here.
 
 
 
 
 **=========================== SkyhookDM Python Client Architecture ===========================**
 
-<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/architecture.png" width="45%"></a></p>
+<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/blob/master/client/skyhookdmclient/rsc/architecture.png" width="45%"></a></p>
 
 * Client: 
     * Submits data read/write/query requests to Skyhook-Driver.
@@ -58,7 +58,7 @@ docker run --rm -ti -v $PWD:/ws -w /ws uccross/skyhookdm-py /ws/myapp.py
 The above mounts the `myproject/` folder in a `/ws` (workspace) folder 
 inside the container. It then invokes the `example.py` file that we 
 need to write ourselves. Take a look at the 
-[`examples/`](./skyhookdmpy/examples) folder for examples of how to 
+[`examples/`](./client/skyhookdmclient/examples) folder for examples of how to 
 write applications that use the Skyhook python client library.
 
 #### Run in Kubernetes
@@ -95,13 +95,13 @@ instead of `/path/to/script.py`.
 
 
 **========================= More Details about SkyhookDM Python APIs =========================**
-**Skyhook_common:**
+**skyhook_common:**
 
 This module defines the classes such as Dataset, File, RootNode  which should be understood by both the modules of SkyhookDM and Skyhook_driver.  
 
 _Classes_:
 
-<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/Classes_in_Skyhook_common.png" width="45%"></a></p>
+<p align="center"><a href="https://github.com/uccross/skyhookdm-pythonclient"><img src="https://github.com/uccross/skyhookdm-pythonclient/blob/master/client/skyhookdmclient/rsc/Classes_in_Skyhook_common.png" width="45%"></a></p>
 
 * Dataset:
 
@@ -130,17 +130,17 @@ _Classes_:
     * getParent(): returns the parent of the current RootNode.
     
 
-**Skyhook_driver:**
+**skyhook_driver:**
 
 Skyhook_driver handles the heavy workloads such as writing the dataset to the ceph cluster and partition the root files to smaller Arrow tables. Some complicated queries can also be handled by Skyhook_driver. Skyhook_driver can manage multiple workers, schedule tasks and balance the workload between workers. Workers can be added and removed based on the volume of the workload.
 
-**Skyhook:**
+**skyhook:**
 
 For now this module only contains one class which is SkyhookDM. This module and Skyhook_common should be installed by the client. SkyhookDM connects to the Skyhook_driver and submit tasks to Skyhook_driver. Some lightweight queries are also handled by SkyhookDM.
 
 _Classes_:
 
-* SkyhookDMClient:
+* skyhookdmclient:
 
     * connect(*ip_addr*): connects Skyhook_driver given its *ip_addr*
 
@@ -156,15 +156,15 @@ _Classes_:
 ```python
 # import the lib
 
-from skyhookdmpy import SkyhookDM
+from skyhookdmclient import SkyhookDM
 
 # create a new SkyhookDM object
 
 sk = SkyhookDM()
 
-# connect to Skyhook_driver
+# connect to Skyhook_driver and Ceph data pool, please replace the ip_address and the pool name. 
 
-sk.connect('128.105.144.226')
+sk.connect('ip_address','ceph_pool_name')
 
 # give the Root file urls
 
