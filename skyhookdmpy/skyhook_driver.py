@@ -80,8 +80,8 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
     def buildObj(dst_name, branch, subnode, obj_id):
         from collections import OrderedDict
         # change the name here to object_id which is the node_id
-        # objname = branch.name.decode("utf-8")
-        objname = '.' + str(branch.name) + '.' + str(obj_id)
+        brname = branch.name.decode("utf-8")
+        objname = '.' + brname + '.' + str(obj_id)
         parent = subnode.parent
         while parent is not None:
             objname = parent.name + '#' + objname
@@ -98,8 +98,8 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
         fieldmeta = {}
         fieldmeta['BasketSeek'] = bytes(branch._fBasketSeek)
         fieldmeta['BasketBytes'] = bytes(branch._fBasketBytes)
-        fieldmeta['Compression'] = bytes(str(branch.compression))
-        fieldmeta['Compressionratio'] = bytes(str(branch.compressionratio()))
+        fieldmeta['Compression'] = bytes(str(branch.compression),'utf8')
+        fieldmeta['Compressionratio'] = bytes(str(branch.compressionratio()),'utf8')
 
         if('inf' not in str(branch.interpretation.type) and 'bool' in str(branch.interpretation.type)):
             function=getattr(pa,'bool_')
@@ -138,7 +138,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
         # sche_meta['data_structure_version'] = bytes(0)
         # #data format -> arrow
         # sche_meta['data_format_type'] = bytes(11)
-        sche_meta['0'] = bytes('0 4 0 0 EVENT_ID;' + str(obj_id) + ' ' + str(match_skyhook_datatype(branch.interpretation.type)) + ' 0 1 ' + str(branch.name).upper())
+        sche_meta['0'] = bytes('0 4 0 0 EVENT_ID;' + str(obj_id) + ' ' + str(match_skyhook_datatype(branch.interpretation.type)) + ' 0 1 ' + branch.name.decode("utf-8").upper(),'utf8')
         # sche_meta['db_schema'] = bytes('n/a')
         # sche_meta['table_name'] = bytes(str(branch.name.decode("utf-8")))
         # sche_meta['num_rows'] = bytes(int(branch.numentries))
@@ -179,7 +179,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
                 cluster.connect()
                 ioctx = cluster.open_ioctx(ceph_pool)
                 ioctx.aio_write_full(objname + '.0', buff_bytes)
-                ioctx.set_xattr(objname + '.0', 'size', str(len(buff_bytes)))
+                ioctx.set_xattr(objname + '.0', 'size', bytes(str(len(buff_bytes)),'utf8'))
                 ioctx.close()
                 cluster.shutdown()
             else:
@@ -194,7 +194,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
                     buff = sink.getvalue()
                     buff_bytes = buff.to_pybytes()
                     ioctx.aio_write_full(x + '.' + str(i), buff_bytes)
-                    ioctx.set_xattr(objname + '.' + str(i), 'size', str(len(buff_bytes)))
+                    ioctx.set_xattr(objname + '.' + str(i), 'size', bytes(str(len(buff_bytes)),'utf8'))
                     i += 1
                 ioctx.close()
                 cluster.shutdown()
