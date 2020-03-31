@@ -21,7 +21,7 @@ class Dataset:
     def getSize(self):
         return self.size
     
-    def runQuery(self, querystr):
+    def _runQuery(self, querystr):
         print(querystr)
         
     def __str__(self):
@@ -44,22 +44,22 @@ class File:
     
 
     def getRoot(self):
-        node = self.buildTree(self.schema, None)
+        node = self._buildTree(self.schema, None)
         return node
     
     def getSchema(self):
         return self.schema
     
     
-    def buildTree(self, nd_dict, parent):
+    def _buildTree(self, nd_dict, parent):
         node = RootNode(nd_dict['name'], nd_dict['classtype'], nd_dict['datatype'], parent, nd_dict['node_id'], nd_dict['data_schema'])
         node.children = []
         for item in nd_dict['children']:
-            tmp = self.buildTree(item, node)
+            tmp = self._buildTree(item, node)
             node.children.append(tmp)
         return node
     
-    def runQuery(self, querystr):
+    def _runQuery(self, querystr):
         obj_prefix = self.dataset + '.' + self.name
         print(obj_prefix)
         
