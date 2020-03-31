@@ -1,5 +1,5 @@
 import struct
-from skyhookdmpy.skyhook_common import *
+from skyhookdmclient.skyhook_common import *
 
 class SkyhookDM:
     def __init__(self):
@@ -32,7 +32,7 @@ class SkyhookDM:
     def writeArrowTable(self, table, name):
 
         def runOnDriver(buff_bytes, name,  ceph_pool):
-            from skyhookdmpy import skyhook_driver as sd
+            from skyhookdmdriver import skyhook_driver as sd
             res = sd.writeArrowTable(buff_bytes, name, ceph_pool)
             return res
 
@@ -55,7 +55,7 @@ class SkyhookDM:
     def writeDataset(self, path, dstname):
         def runOnDriver(path, dstname, poolname, addr ):
             # import skyhook_driver as sd
-            from skyhookdmpy import skyhook_driver as sd
+            from skyhookdmdriver import skyhook_driver as sd
             res = sd.writeDataset(path, dstname, addr, poolname)
             return res
 
@@ -65,7 +65,7 @@ class SkyhookDM:
 
     def getDataset(self, name):
         def runOnDriver(name, ceph_pool):
-            from skyhookdmpy import skyhook_driver as sd
+            from skyhookdmdriver import skyhook_driver as sd
             res = sd.getDataset(name, ceph_pool)
             return res
 

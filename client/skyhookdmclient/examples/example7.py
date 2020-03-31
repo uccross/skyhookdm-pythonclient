@@ -2,7 +2,7 @@ import pyarrow as pa
 import pandas as pd
 
 # Setup SkyhookDM
-from skyhookdmpy import SkyhookDM
+from skyhookdmclient import SkyhookDM
 
 # Create a new SkyhookDM object
 sk = SkyhookDM()

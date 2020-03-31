@@ -1,5 +1,5 @@
 # suppose 
-from skyhookdmpy import SkyhookDM
+from skyhookdmclient import SkyhookDM
 sk = SkyhookDM()
 sk.connect('ipaddr', 'hepdatapool')
 dst = sk.getDataset('nanodst')

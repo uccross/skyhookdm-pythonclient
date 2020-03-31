@@ -1,5 +1,5 @@
 # Import the SkyhookDM library
-from skyhookdmpy import SkyhookDM
+from skyhookdmclient import SkyhookDM
 
 # Create a SkyhookDM() object
 sk = SkyhookDM()

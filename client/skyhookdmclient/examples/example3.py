@@ -1,4 +1,4 @@
-from skyhookdmpy import SkyhookDM
+from skyhookdmclient import SkyhookDM
 sk = SkyhookDM()
 
 #please change the ip address of ip_address to the correct ip_address of Skyhook_Driver before run this example.

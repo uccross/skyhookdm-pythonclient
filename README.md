@@ -1,10 +1,12 @@
-**Quick Start** (suppose that you have the Skyhook Cloudlab expeirment running):
+**Setup SkyhookDM Driver** (suppose that you have the Skyhook Cloudlab expeirment running):
 
 * Run the script of "[setup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/setup.sh)" to check and install dependencies and create the required ceph pool.
 * Logout the ssh session and login again. 
 * Run the script of "[startup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/startup.sh)" and you're ready to go.
 
-Note: Cloning this repo is not necessary. Runing the scripts is enough. The scripts use 'pip' to install skyhookdmpy and other dependencies which can't be installed via 'pip' commands. 
+Note: Cloning this repo is not necessary. Runing the scripts is enough. The scripts use 'pip' to install skyhookdmdriver and other dependencies which can't be installed via 'pip' commands. 
+
+* One the client, run 'pip install skyhookdmclient' to install the client library. You can start with some examples(ref) here.
 
 
 
@@ -138,7 +140,7 @@ For now this module only contains one class which is SkyhookDM. This module and 
 
 _Classes_:
 
-* SkyhookDM:
+* SkyhookDMClient:
 
     * connect(*ip_addr*): connects Skyhook_driver given its *ip_addr*
 
@@ -199,15 +201,15 @@ sk.writeDataset(urls,'demodst')
 ```python
 # import the lib
 
-from skyhookdmpy import SkyhookDM
+from skyhookdmclient import SkyhookDM
 
 # create a new SkyhookDM object
 
 sk = SkyhookDM()
 
-# connect to Skyhook_driver
+# connect to Skyhook_driver and Ceph data pool, please replace the ip_address and the pool name. 
 
-sk.connect('128.105.144.226')
+sk.connect('ip_address','ceph_pool_name')
 
 # get the dataset named ‘aod’
 

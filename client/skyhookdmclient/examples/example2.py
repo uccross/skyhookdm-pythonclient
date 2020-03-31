@@ -1,4 +1,4 @@
-from skyhookdmpy import SkyhookDM
+from skyhookdmclient import SkyhookDM
 sk = SkyhookDM()
 sk.connect('localhost', 'hepdatapool')
 dst = sk.getDataset('mm')

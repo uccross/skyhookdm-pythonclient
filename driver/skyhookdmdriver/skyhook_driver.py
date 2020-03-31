@@ -1,7 +1,7 @@
 #This is an example of dask server side skyhook_driver library.
 #Copy to /usr/lib/python2.7/ so that it can be imported anywhere
 # from skyhook_common import *
-from skyhookdmpy.skyhook_common import *
+from skyhookdmdriver.skyhook_common import *
 import rados
 
 def writeArrowTable(buff_bytes, name,  ceph_pool):
