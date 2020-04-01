@@ -3,7 +3,7 @@ steps:
   args: ['build', '-t', 'uccross/skyhookdm-py', '-f', './Dockerfile', 'client/']
 
 - uses: docker://gcr.io/cloud-builders/docker:18.09.6
-  args: ['build', '-t', 'uccross/skyhookdm-driver-py', '-f', './Dockerfile', 'driver/']
+  args: ['build', '-t', 'uccross/skyhookdm-driver-py', '--build-arg', 'EXTRA_PKGS=python3-rados', '-f', './Dockerfile', 'driver/']
 
 - uses: docker://gcr.io/cloud-builders/docker:18.09.6
   runs: bash
