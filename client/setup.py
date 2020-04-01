@@ -15,10 +15,8 @@ setup(
           'zict==1.0.0',
           'msgpack==0.6.2',
           'uproot',
-          'wget',
           'backports.lzma',
-          'dask[complete]',
-          'execnet'
+          'dask[complete]'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package

@@ -83,7 +83,8 @@ class SkyhookDM:
 
     def runQuery(self, obj, querystr):
         #limit just to 1 obj
-        command_template = '--wthreads 1 --qdepth 120 --query hep --pool {} --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --table-name \"#tablename\" --subpartitions 10'.format(self.ceph_pool)
+        # command_template = '--wthreads 1 --qdepth 120 --query hep --pool hepdatapool --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --table-name \"#tablename\" --subpartitions 10'
+        command_template = ['--wthreads', '1',  '--qdepth', '120',  '--query', 'hep', '--pool', self.ceph_pool, '--output-format', 'SFT_PYARROW_BINARY', '--num-objs', '1', '--subpartitions', '10']
 
 
         def generateQueryCommand(file, querystr):
@@ -127,45 +128,41 @@ class SkyhookDM:
                         break
 
                 if found:
-                    cmd = command_template
+                    cmd = command_template.copy()
+                    cmd.append('--start-obj')
+                    cmd.append(str(obj_num))
+
                     data_schema = '0 4 0 0 EVENT_ID;' + f_schema['data_schema'] + ';'
-                    cmd = cmd.replace('#dataschema', data_schema)
-                    cmd = cmd.replace('#colname', 'event_id,'+ br_name.strip())
-                    cmd = cmd.replace('#prefix', obj_prefix)
-                    cmd = cmd.replace('#tablename', br_name.strip())
+                    cmd.append('--data-schema')
+                    cmd.append(data_schema)
+
+                    cmd.append('--project')
+                    cmd.append('event_id,'+ br_name.strip())
+
+                    cmd.append('--oid-prefix')
+                    cmd.append(obj_prefix)
+                    
+                    cmd.append('--table-name')
+                    cmd.append(br_name.strip())
+                    
                     #limit the obj num to 1
-                    cmd = cmd.replace('#objnum', str(1))
-                    cmd = cmd.replace('#startobj', str(obj_num))
                     cmds.append(cmd)
             return cmds
 
 
 
         def exeQuery(command):
-            prog = '/mnt/sdb/skyhookdm-ceph/build/bin/run-query '
+            import subprocess
+
+            prog = '/mnt/sdb/skyhookdm-ceph/build/bin/run-query'
+            cmd = []
+            cmd.append(prog)
+            cmd.extend(command)
             
-            import execnet
-            import json
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            result = p.communicate()[0]
 
-            def talk_to_skyhook_v2(cmd):
-                gw = execnet.makegateway("popen//python=python2.7")
-                channel = gw.remote_exec("""
-                    import os
-                    import json
-                    import struct
-                    result = os.popen(channel.receive()).read()
-                    result = struct.unpack('{}B'.format(len(result)), result)
-                    result = list(result)
-                    result = json.dumps(result)
-                    channel.send(result)
-                    """)
-                channel.send(cmd)
-                return channel.receive()
-
-            result = talk_to_skyhook_v2(prog + command)
-        
-            result = json.loads(result)
-            return bytes(result)
+            return result
 
 
         def _mergeTables(tables):
@@ -279,8 +276,6 @@ class SkyhookDM:
             return global_tables
 
         return None
-
-
 
 
 
