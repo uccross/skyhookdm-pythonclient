@@ -10,6 +10,7 @@ steps:
   args: [-c,
     'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
      docker push uccross/skyhookdm-py &&
-     docker push uccross/skyhookdm-driver-py'
+     docker push uccross/skyhookdm-driver-py &&
+     rm /root/.docker/config.json'
   ]
   secrets: [DOCKER_USER, DOCKER_PASSWORD]
