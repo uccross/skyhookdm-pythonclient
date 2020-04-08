@@ -11,7 +11,7 @@ def writeArrowTable(buff_bytes, name,  ceph_pool):
         cluster.connect()
         ioctx = cluster.open_ioctx(ceph_pool)
         ioctx.aio_write_full(name, buff_bytes)
-        ioctx.set_xattr(name, 'size', str(len(buff_bytes)))
+        ioctx.set_xattr(name, 'size', bytes(str(len(buff_bytes)),'utf-8'))
         ioctx.close()
         cluster.shutdown()
 
