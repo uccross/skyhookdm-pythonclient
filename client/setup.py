@@ -10,7 +10,7 @@ setup(
   url = 'https://github.com/uccross/skyhookdm-pythonclient',   # Provide either the link to your github or to your website
   # download_url = 'https://github.com/uccross/skyhookdm-pythonclient/archive/v0.3.4.tar.gz',    # I explain this later on
   keywords = ['SkyhookDM', 'Skyhook', 'Skyhook-pythonclient'],   # Keywords that define your package best
-  install_requires=[            # I get to this in a second
+  install_requires=[
           'pyarrow',
           'zict==1.0.0',
           'msgpack==0.6.2',

@@ -5,7 +5,7 @@ sk = SkyhookDM()
 sk.connect('ip_address','hepdatapool')
 
 # write data
-urls = ['https://github.com/uccross/skyhookdm-pythonclient/raw/master/skyhookdmpy/rsc/nano_aod.root']
+urls = ['https://github.com/uccross/skyhookdm-pythonclient/raw/master/client/skyhookdmclient/rsc/nano_aod.root']
 sk.writeDataset(urls,'nanoexample')
 
 dst = sk.getDataset('nanoexample')

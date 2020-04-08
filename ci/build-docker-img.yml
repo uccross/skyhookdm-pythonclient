@@ -1,11 +1,16 @@
 steps:
 - uses: docker://gcr.io/cloud-builders/docker:18.09.6
-  args: ['build', '-t', 'uccross/skyhookdm-py', '.']
+  args: ['build', '-t', 'uccross/skyhookdm-py', '-f', './Dockerfile', 'client/']
+
+- uses: docker://gcr.io/cloud-builders/docker:18.09.6
+  args: ['build', '-t', 'uccross/skyhookdm-driver-py', '--build-arg', 'EXTRA_PKGS=python3-rados', '-f', './Dockerfile', 'driver/']
 
 - uses: docker://gcr.io/cloud-builders/docker:18.09.6
   runs: bash
   args: [-c,
     'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD &&
-     docker push uccross/skyhookdm-py'
+     docker push uccross/skyhookdm-py &&
+     docker push uccross/skyhookdm-driver-py &&
+     rm /root/.docker/config.json'
   ]
   secrets: [DOCKER_USER, DOCKER_PASSWORD]
