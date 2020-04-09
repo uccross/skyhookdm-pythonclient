@@ -1,5 +1,6 @@
 import struct
 from skyhookdmclient.skyhook_common import *
+import awkward
 
 class SkyhookDM:
     def __init__(self):
@@ -29,27 +30,64 @@ class SkyhookDM:
     # Merge object?
     # Split object?
     # Submit to driver?
-    def writeArrowTable(self, table, name):
-
+    def writeArrowTable(self, table, data_schema_name, table_name=''):
+        
         def runOnDriver(buff_bytes, name,  ceph_pool):
             from skyhookdmdriver import skyhook_driver as sd
             res = sd.writeArrowTable(buff_bytes, name, ceph_pool)
             return res
 
-        #Serialize arrow table to bytes
-        batches = table.to_batches()
-        sink = pa.BufferOutputStream()
-        writer = pa.RecordBatchStreamWriter(sink, table.schema)
+        # In the servicex case, the data_schema_name is did for now
+        # the data_schema_name is not checked so far. Will add the logic later.
+        # May also need to get the object of data_schema_name and add new information about the tables written into the SkyhookDM
 
-        for batch in batches:
-            writer.write_batch(batch)
-        buff = sink.getvalue()
-        buff_bytes = buff.to_pybytes()
+        id_array = range(len(table.columns[0]))
+        event_id_col = pa.field('EVENT_ID', pa.int64())
 
-        fu = self.client.submit(runOnDriver, buff_bytes, name, self.ceph_pool)
-        result = fu.result()
+        object_names = []
+
+        # Create a table for each column
+        for i in range(len(table.columns)):
+            field = table.field(0)
+            schema = pa.schema([event_id_col, table.field(i)])
+            sub_table = pa.Table.from_arrays([id_array, table.columns[i]],schema = schema)
+            
+            # Serialize arrow table to bytes
+            batches = sub_table.to_batches()
+            sink = pa.BufferOutputStream()
+            writer = pa.RecordBatchStreamWriter(sink, sub_table.schema)
+
+            for batch in batches:
+                writer.write_batch(batch)
+            
+            buff = sink.getvalue()
+            buff_bytes = buff.to_pybytes()
+
+            sub_table_name = data_schema_name + '#' + table_name + '#' + table.column_names[i] + '.0.0'
+            fu = self.client.submit(runOnDriver, buff_bytes, sub_table_name, self.ceph_pool)
+            result = fu.result()
+            if result is True:
+                object_names.append(sub_table_name)
         
-        return result
+        return object_names
+
+
+    def addDatasetSchema(self, schema_json, data_type = 'servicex'):
+        def runOnDriver(schema_json, name, data_type, ceph_pool):
+            from skyhookdmdriver import skyhook_driver as sd
+            res = sd.addDatasetSchema(schema_json, name, data_type, ceph_pool)
+            return res
+
+        values = json.loads(schema_json)
+
+        # the name of the schema is named after the did for now
+        name = values['did']
+
+        fu = self.client.submit(runOnDriver, schema_json, name, data_type, self.ceph_pool)
+        result = fu.result()
+
+
+
 
 
     def writeDataset(self, path, dstname):
@@ -216,6 +254,7 @@ class SkyhookDM:
 
             res = _mergeTables(tables)
 
+            res = LazyDataframe(res)
             return res
 
 
@@ -271,6 +310,7 @@ class SkyhookDM:
                     tables.append(table)
 
                 res = _mergeTables(tables)
+                res = LazyDataframe(res)
                 global_tables.append(res)
 
             return global_tables
@@ -278,5 +318,42 @@ class SkyhookDM:
         return None
 
 
+
+class LazyDataframe:
+
+    def __init__(self, arr_table, entrysteps = -1):
+        self._arr_table = arr_table
+        self._entrysteps = entrysteps
+        self._batches = None
+        self._current_index = 0
+
+    def __iter__(self):
+        return self
+
+
+    def __next__(self):
+        if self._batches is None:
+            raise Exception('Please set entrysteps using set_entrysteps() function before use!') 
+
+        if self._current_index >= len(self._batches): 
+            self._current_index = 0
+            raise StopIteration
+
+        sub_table = pa.Table.from_batches(self._batches[self._current_index:self._current_index + 1])
+        self._current_index = self._current_index + 1
+
+        chunk = sub_table.to_pydict()
+
+        for item in chunk:
+            chunk[item] = awkward.fromiter(chunk[item])
+
+        return chunk
+
+    def set_entrysteps(self, entrysteps):
+        if self._batches is not None:
+            self._arr_table = pa.Table.from_batches(self._batches)
+
+        self._entrysteps = entrysteps
+        self._batches = self._arr_table.to_batches(entrysteps)
 
 

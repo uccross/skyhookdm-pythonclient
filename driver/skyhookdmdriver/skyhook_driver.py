@@ -4,6 +4,23 @@
 from skyhookdmdriver.skyhook_common import *
 import rados
 
+def addDatasetSchema(schema_json, name, data_type, ceph_pool):
+    try: 
+        cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
+        cluster.connect()
+        ioctx = cluster.open_ioctx(ceph_pool)
+        ioctx.aio_write_full(name, bytes(schema_json,'utf-8'))
+        ioctx.set_xattr(name, 'size', bytes(str(len(schema_json)),'utf-8'))
+        ioctx.set_xattr(name, 'data_type', bytes(data_type,'utf-8'))
+        ioctx.close()
+        cluster.shutdown()
+
+    except Exception as e:
+        return str(e)
+
+    return True
+
+
 def writeArrowTable(buff_bytes, name,  ceph_pool):
     # Write to the Ceph cluster
     try: 
@@ -17,7 +34,6 @@ def writeArrowTable(buff_bytes, name,  ceph_pool):
 
     except Exception as e:
         return str(e)
-
 
     return True
 
