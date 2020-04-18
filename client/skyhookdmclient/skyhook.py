@@ -22,6 +22,7 @@ class SkyhookDM:
         self.ceph_pool = ceph_pool_name
         # self.ioctx = self.cluster.open_ioctx(ceph_pool_name)
 
+
     # Write the arrow table to Ceph
     # Do we need to serialize it?
     # Exception Handling
@@ -34,7 +35,7 @@ class SkyhookDM:
         
         def runOnDriver(buff_bytes, name,  ceph_pool):
             from skyhookdmdriver import skyhook_driver as sd
-            res = sd.writeArrowTable(buff_bytes, name, ceph_pool)
+            res = sd.writeToCeph(buff_bytes, name, ceph_pool)
             return res
 
         # In the servicex case, the data_schema_name is did for now
@@ -85,8 +86,17 @@ class SkyhookDM:
 
         fu = self.client.submit(runOnDriver, schema_json, name, data_type, self.ceph_pool)
         result = fu.result()
+    
+    def addTableGroup(self, table_group):
+        
+        def runOnDriver(buff_bytes, name,  ceph_pool):
+            from skyhookdmdriver import skyhook_driver as sd
+            res = sd.writeToCeph(buff_bytes, name, ceph_pool)
+            return res
+        
+        fu = self.client.submit(runOnDriver, table_group.serialize(), table_group.getName(), self.ceph_pool)
 
-
+        result = fu.result()
 
 
 
@@ -111,13 +121,18 @@ class SkyhookDM:
         result = fu.result()
         
         data = json.loads(result)
-        files = [] 
-        for item in data['files']:
-            file = File(item['name'], item['file_attributes'], item['file_schema'], name, str(item['ROOTDirectory']))
-            files.append(file)
 
-        dataset = Dataset(data['dataset_name'], data['size'], files)
-        return dataset
+        if data.has_key('type'):
+            return data
+
+        else:
+            files = [] 
+            for item in data['files']:
+                file = File(item['name'], item['file_attributes'], item['file_schema'], name, str(item['ROOTDirectory']))
+                files.append(file)
+
+            dataset = Dataset(data['dataset_name'], data['size'], files)
+            return dataset
 
     def runQuery(self, obj, querystr):
         #limit just to 1 obj
@@ -356,4 +371,51 @@ class LazyDataframe:
         self._entrysteps = entrysteps
         self._batches = self._arr_table.to_batches(entrysteps)
 
+
+
+# CREATE TABLE Persons (
+#     PersonID int,
+#     LastName varchar(255),
+#     FirstName varchar(255),
+#     Address varchar(255),
+#     City varchar(255)
+# );
+
+class TableGroup:
+    def __init__(self, table_group_name, metadata = None):
+        self._name = table_group_name
+        self.schema = {}
+        self.schema['table_group_name'] = table_group_name
+        self.schema['metadata'] = metadata
+        self.schema['type'] = 'servicex'
+        self.tables = []
+    
+
+    def createTable(self, table_name, arrow_schema, metadata = None):
+        schema = arrow_schema
+
+        table = {}
+        table['table_name'] = table_name
+
+        col_list = []
+
+        for i in range(len(schema.names)):
+            col = {}
+            col['name'] = schema.field(i).name
+            col['type'] = str(schema.field(i).type)
+            col_list.append(col)
+        
+        table['schema'] = col_list
+        table['metadata'] = metadata
+
+        self.tables.append(table)
+
+    def serialize(self):
+        self.schema['tables'] = self.tables
+        json_str = json.dumps(self.schema,indent=4)
+        buff_bytes = bytes(json_str,'utf-8')
+        return buff_bytes
+
+    def getName(self):
+        return self._name
 

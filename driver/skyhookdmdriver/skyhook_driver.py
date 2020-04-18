@@ -21,7 +21,7 @@ def addDatasetSchema(schema_json, name, data_type, ceph_pool):
     return True
 
 
-def writeArrowTable(buff_bytes, name,  ceph_pool):
+def writeToCeph(buff_bytes, name,  ceph_pool):
     # Write to the Ceph cluster
     try: 
         cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
