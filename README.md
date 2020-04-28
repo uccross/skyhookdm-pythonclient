@@ -149,6 +149,10 @@ _Classes_:
     * getDataset(*name*): returns a Dataset object given the dataset name. 
 
     * runQuery(*obj*, *querystr*): returns an arrow table/tables give the *obj* and *querystr.* The *obj* can be a File object or a Dataset object. The function returns one arrow table if it’s a File object and returns a list of tables if it’s a Dataset object. If multiple branches are queried, an arrow table with multiple columns for each branch is returned.
+    
+    * addDatasetSchema(*schema_json*, *data_type* = 'servicex'): allows adding a dataset schema using json by specifying the the data_type. The default data type is 'servicex'.
+    
+    * writeArrowTable(*table*, *data_schema_name*, *table_name*=''): writes a Arrow Table to SkyhookDM given the data_schema_name defined in the json dataset schema. *table_name* is optional. This function returns a list of object names written to the SkyhookDM.
 
 **Usage Examples:**
 
@@ -226,4 +230,52 @@ table = sk.runQuery(f,'select event_id>5, project Events;75.Muon_phi')
 # run the query on the dataset, queries multiple branches.
 
 tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;75.Muon_phi,Events;75.Muon_mass')
+```
+
+==========================
+
+```python
+# import the lib
+
+from skyhookdmclient import SkyhookDM
+import pyarrow as pa
+import pandas as pd
+
+# create a new SkyhookDM object
+
+sk = SkyhookDM()
+
+# connect to Skyhook_driver and Ceph data pool, please replace the ip_address and the pool name. 
+
+sk.connect('ip_address','ceph_pool_name')
+
+# json values which defines the dataset schema.
+my_json = '''{
+	"did": "222:wfe.361106.PowhegPythia8EvtGen_AZNLOCTEQ6L1_Zee.merge.DAOD",
+	"selection": "(call ResultTTree (call Select (call Select (call EventDataset (list 'localds:bogus')) (lambda (list e) (list (call (attr e 'Electrons') 'Electrons') (call (attr e 'Muons') 'Muons')))) (lambda (list e) (list (call (attr (subscript e 0) 'Select') (lambda (list ele) (call (attr ele 'e')))) (call (attr (subscript e 0) 'Select') (lambda (list ele) (call (attr ele 'pt')))) (call (attr (subscript e 0) 'Select') (lambda (list ele) (call (attr ele 'phi')))) (call (attr (subscript e 0) 'Select') (lambda (list ele) (call (attr ele 'eta')))) (call (attr (subscript e 1) 'Select') (lambda (list mu) (call (attr mu 'e')))) (call (attr (subscript e 1) 'Select') (lambda (list mu) (call (attr mu 'pt')))) (call (attr (subscript e 1) 'Select') (lambda (list mu) (call (attr mu 'phi')))) (call (attr (subscript e 1) 'Select') (lambda (list mu) (call (attr mu 'eta'))))))) (list 'e_E' 'e_pt' 'e_phi' 'e_eta' 'mu_E' 'mu_pt' 'mu_phi' 'mu_eta') 'forkme' 'dude.root')",
+	"image": "sslhep/servicex",
+	"result-destination": "kafka",
+	"kafka": {
+		"broker": "kafka-inc:0000"
+	},
+	"chunk-size": 1000,
+	"workers": 17
+}'''
+
+# add the json data to SkyhookDM. The name of the object will be defined by the 'name' or 'did' (for 'servicex') value in the json.
+sk.addDatasetSchema(my_json)
+
+# Create a panda dataframe with one column named 'a'
+df = pd.DataFrame({"a": [1, 2, 3]})
+
+# Convert the panda dataframe to arrow table. 
+table = pa.Table.from_pandas(df)
+
+# Write the arrow table to the SkyhookDM. Use the 'did' value as the dataset name.
+objs = sk.writeArrowTable(table,"222:wfe.361106.PowhegPythia8EvtGen_AZNLOCTEQ6L1_Zee.merge.DAOD")
+
+# Print the object names written to SkyhookDM.
+print(objs)
+
+
 ```
