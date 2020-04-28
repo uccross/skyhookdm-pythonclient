@@ -31,7 +31,7 @@ class SkyhookDM:
     # Merge object?
     # Split object?
     # Submit to driver?
-    def writeArrowTable(self, table, data_schema_name, table_name=''):
+    def writeArrowTable(self, table_group_name, table_name, table):
         
         def runOnDriver(buff_bytes, name,  ceph_pool):
             from skyhookdmdriver import skyhook_driver as sd
@@ -64,7 +64,7 @@ class SkyhookDM:
             buff = sink.getvalue()
             buff_bytes = buff.to_pybytes()
 
-            sub_table_name = data_schema_name + '#' + table_name + '#' + table.column_names[i] + '.0.0'
+            sub_table_name = table_group_name + '#' + table_name + '#' + table.column_names[i] + '.0.0'
             fu = self.client.submit(runOnDriver, buff_bytes, sub_table_name, self.ceph_pool)
             result = fu.result()
             if result is True:
@@ -122,7 +122,7 @@ class SkyhookDM:
         
         data = json.loads(result)
 
-        if data.has_key('type'):
+        if 'type' in data.keys():
             return data
 
         else:
