@@ -87,7 +87,7 @@ class SkyhookDM:
         fu = self.client.submit(runOnDriver, schema_json, name, data_type, self.ceph_pool)
         result = fu.result()
     
-    def addTableGroup(self, table_group):
+    def createTableGroup(self, table_group):
         
         def runOnDriver(buff_bytes, name,  ceph_pool):
             from skyhookdmdriver import skyhook_driver as sd
@@ -391,7 +391,7 @@ class TableGroup:
         self.tables = []
     
 
-    def createTable(self, table_name, arrow_schema, metadata = None):
+    def addTable(self, table_name, arrow_schema, metadata = None):
         schema = arrow_schema
 
         table = {}
