@@ -2,7 +2,9 @@
 #Copy to /usr/lib/python2.7/ so that it can be imported anywhere
 # from skyhook_common import *
 from skyhookdmdriver.skyhook_common import *
+from skyhookdmdriver.Tables import FB_Meta
 import rados
+import flatbuffers
 
 def addDatasetSchema(schema_json, name, data_type, ceph_pool):
     try: 
@@ -51,6 +53,33 @@ def getDataset(dstname, ceph_pool):
         return str(e)
 
     return data
+
+def addFB_Meta(arrow_binary):
+    # Codes are integrated from repo below. Thanks Aldrin!
+    # https://github.com/drin/decl-mercantile/blob/master/python/skyhookdm_singlecell/dataformats.py
+
+    byte_count = (4 + 8 + 4 + 8 + 8 + 4)
+    builder = flatbuffers.Builder(byte_count + len(arrow_binary))
+
+    wrapped_data_blob = builder.CreateByteVector(arrow_binary)
+
+    # construct the remaining flatbuffer structure
+    FB_Meta.FB_MetaStart(builder)
+
+    FB_Meta.FB_MetaAddBlobFormat(builder, 5)
+    FB_Meta.FB_MetaAddBlobData(builder, wrapped_data_blob)
+    FB_Meta.FB_MetaAddBlobSize(builder, len(arrow_binary))
+    FB_Meta.FB_MetaAddBlobDeleted(builder, False)
+    FB_Meta.FB_MetaAddBlobOrigOff(builder, 0)
+    FB_Meta.FB_MetaAddBlobOrigLen(builder, len(arrow_binary))
+    FB_Meta.FB_MetaAddBlobCompression(builder, 0)
+
+    builder.Finish(FB_Meta.FB_MetaEnd(builder))
+
+    # return the finished binary blob representing FBMeta(<Arrow binary>)
+    return bytes(builder.Output())
+
+
 
 def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
 
@@ -187,13 +216,13 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
 
 
         #data should be written into the ceph pools
-        #for now writ the data into 'data' which is a local folder
         try:
             if num_partitions == 1:
             # Write to the Ceph pool
                 cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
                 cluster.connect()
                 ioctx = cluster.open_ioctx(ceph_pool)
+                buff_bytes = addFB_Meta(buff_bytes)
                 ioctx.aio_write_full(objname + '.0', buff_bytes)
                 ioctx.set_xattr(objname + '.0', 'size', bytes(str(len(buff_bytes)),'utf8'))
                 ioctx.close()
@@ -209,6 +238,7 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
                     writer.write_batch(batch)
                     buff = sink.getvalue()
                     buff_bytes = buff.to_pybytes()
+                    buff_bytes = addFB_Meta(buff_bytes)
                     ioctx.aio_write_full(x + '.' + str(i), buff_bytes)
                     ioctx.set_xattr(objname + '.' + str(i), 'size', bytes(str(len(buff_bytes)),'utf8'))
                     i += 1
