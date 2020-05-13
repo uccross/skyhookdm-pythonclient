@@ -1,4 +1,4 @@
-namespace Tables;
+namespace sparkskyhookdm;
 
 table FB_Meta {
   blob_format      : int32;     // enum SkyFormatType of contents stored in data blob
