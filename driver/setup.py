@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'skyhookdmdriver',         # How you named your package folder (MyLib)
   packages = ['skyhookdmdriver'],   # Chose the same as "name"
-  version = '0.0.9',      # Start with a small number and increase it with every change you make
+  version = '0.0.10',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Python Driver of SkyhookDM for Ceph',   # Give a short description about your library
   author = 'Xiaowei Chu',                   # Type in your name
@@ -17,7 +17,8 @@ setup(
           'uproot',
           'bokeh',
           'wget',
-          'dask[complete]'
+          'dask[complete]',
+          'flatbuffers'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package

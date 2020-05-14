@@ -1,10 +1,9 @@
 #This is an example of dask server side skyhook_driver library.
-#Copy to /usr/lib/python2.7/ so that it can be imported anywhere
+
 # from skyhook_common import *
 from skyhookdmdriver.skyhook_common import *
-from skyhookdmdriver.Tables import FB_Meta
-import rados
 import flatbuffers
+import rados
 
 def addDatasetSchema(schema_json, name, data_type, ceph_pool):
     try: 
@@ -53,32 +52,6 @@ def getDataset(dstname, ceph_pool):
         return str(e)
 
     return data
-
-def addFB_Meta(arrow_binary):
-    # Codes are integrated from repo below. Thanks Aldrin!
-    # https://github.com/drin/decl-mercantile/blob/master/python/skyhookdm_singlecell/dataformats.py
-
-    byte_count = (4 + 8 + 4 + 8 + 8 + 4)
-    builder = flatbuffers.Builder(byte_count + len(arrow_binary))
-
-    wrapped_data_blob = builder.CreateByteVector(arrow_binary)
-
-    # construct the remaining flatbuffer structure
-    FB_Meta.FB_MetaStart(builder)
-
-    FB_Meta.FB_MetaAddBlobFormat(builder, 5)
-    FB_Meta.FB_MetaAddBlobData(builder, wrapped_data_blob)
-    FB_Meta.FB_MetaAddBlobSize(builder, len(arrow_binary))
-    FB_Meta.FB_MetaAddBlobDeleted(builder, False)
-    FB_Meta.FB_MetaAddBlobOrigOff(builder, 0)
-    FB_Meta.FB_MetaAddBlobOrigLen(builder, len(arrow_binary))
-    FB_Meta.FB_MetaAddBlobCompression(builder, 0)
-
-    builder.Finish(FB_Meta.FB_MetaEnd(builder))
-
-    # return the finished binary blob representing FBMeta(<Arrow binary>)
-    return bytes(builder.Output())
-
 
 
 def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
@@ -170,24 +143,12 @@ def writeDataset(file_urls, dstname, addr, ceph_pool, dst_type = 'root'):
 
         schema = pa.schema([event_id_col, field])
 
-        #metadata for the arrow table
-        # ordered dictionary
-        # sche_meta = OrderedDict()
-        #norman dictionary
+        data_schema = '0 4 0 0 EVENT_ID;' + str(obj_id) + ' ' + str(match_skyhook_datatype(branch.interpretation.type)) + ' 0 1 ' + branch.name.decode("utf-8").upper()
 
-        sche_meta = {}
+        meta_obj = TableMeta('0', '1', '2', SkyFormatType.SFT_ARROW, data_schema, 'n/a', str(branch.name), str(branch.numentries))
 
-        #versions
-        # sche_meta['skyhook_version'] = bytes(0)
-        # sche_meta['data_schema_version'] = bytes(0)
-        # sche_meta['data_structure_version'] = bytes(0)
-        # #data format -> arrow
-        # sche_meta['data_format_type'] = bytes(11)
-        sche_meta['0'] = bytes('0 4 0 0 EVENT_ID;' + str(obj_id) + ' ' + str(match_skyhook_datatype(branch.interpretation.type)) + ' 0 1 ' + branch.name.decode("utf-8").upper(),'utf8')
-        # sche_meta['db_schema'] = bytes('n/a')
-        # sche_meta['table_name'] = bytes(str(branch.name.decode("utf-8")))
-        # sche_meta['num_rows'] = bytes(int(branch.numentries))
-
+        sche_meta = meta_obj.getTableMeta()
+        
         schema = schema.with_metadata(sche_meta)
         table = pa.Table.from_arrays([id_array, branch.array().tolist()],schema = schema)
 

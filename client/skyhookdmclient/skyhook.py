@@ -63,6 +63,7 @@ class SkyhookDM:
             
             buff = sink.getvalue()
             buff_bytes = buff.to_pybytes()
+            buff_bytes = addFB_Meta(buff_bytes)
 
             sub_table_name = table_group_name + '#' + table_name + '#' + table.column_names[i] + '.0.0'
             fu = self.client.submit(runOnDriver, buff_bytes, sub_table_name, self.ceph_pool)
@@ -331,7 +332,6 @@ class SkyhookDM:
             return global_tables
 
         return None
-
 
 
 class LazyDataframe:
