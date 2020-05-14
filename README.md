@@ -268,8 +268,8 @@ my_json = '''{
 # add the json data to SkyhookDM. The name of the object will be defined by the 'name' or 'did' (for 'servicex') value in the json.
 sk.addDatasetSchema(my_json)
 
-# Create a panda dataframe with one column named 'a'
-df = pd.DataFrame({"a": [1, 2, 3]})
+# Create an example panda dataframe (represents column at the end of ths JSON selection statement above).
+df = pd.DataFrame( {"e_E": [1, 2, 3]}, {"e_pt": [4, 5, 6]}, {"e_phi": [7, 8, 9]}, {"e_eta": [10, 11, 12]}, {"mu_E": [13, 14, 15]}, {"mu_pt": [16, 17, 18]}, {"mu_phi": [19, 20, 21]},  {"mu_eta": [22, 23, 24]} )
 
 # Convert the panda dataframe to arrow table. 
 table = pa.Table.from_pandas(df)
