@@ -155,6 +155,7 @@ _Classes_:
     * writeArrowTable(*table*, *data_schema_name*, *table_name*=''): writes a Arrow Table to SkyhookDM given the data_schema_name defined in the json dataset schema. *table_name* is optional. This function returns a list of object names written to the SkyhookDM.
 
 **Usage Examples:**
+[Example to write a dataset to skyhook](#example-write-dataset)
 
 ==========================
 ```python
@@ -232,6 +233,8 @@ table = sk.runQuery(f,'select event_id>5, project Events;75.Muon_phi')
 tables = sk.runQuery(dst,'select event_id>5, project Events;75.Muon_eta,Events;75.Muon_phi,Events;75.Muon_mass')
 ```
 
+
+# Example write dataset
 ==========================
 
 ```python
