@@ -265,6 +265,9 @@ my_json = '''{
 	"workers": 17
 }'''
 
+# here we use the "did" field as the table name.
+table_name = "222:wfe.361106.PowhegPythia8EvtGen_AZNLOCTEQ6L1_Zee.merge.DAOD"
+
 # add the json data to SkyhookDM. The name of the object will be defined by the 'name' or 'did' (for 'servicex') value in the json.
 sk.addDatasetSchema(my_json)
 
@@ -275,7 +278,7 @@ df = pd.DataFrame( {"e_E": [1, 2, 3], "e_pt": [4, 5, 6], "e_phi": [7, 8, 9], "e_
 table = pa.Table.from_pandas(df)
 
 # Write the arrow table to the SkyhookDM. Use the 'did' value as the dataset name.
-objs = sk.writeArrowTable(table,"222:wfe.361106.PowhegPythia8EvtGen_AZNLOCTEQ6L1_Zee.merge.DAOD")
+objs = sk.writeArrowTable(table, table_name)
 
 # Print the object names written to SkyhookDM.
 print(objs)
