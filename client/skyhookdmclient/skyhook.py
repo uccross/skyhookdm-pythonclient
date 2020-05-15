@@ -24,13 +24,6 @@ class SkyhookDM:
 
 
     # Write the arrow table to Ceph
-    # Do we need to serialize it?
-    # Exception Handling
-    # Maintain Metadata
-    # Object namming
-    # Merge object?
-    # Split object?
-    # Submit to driver?
     def writeArrowTable(self, table_group_name, table_name, table):
         
         def runOnDriver(buff_bytes, name,  ceph_pool):
@@ -137,9 +130,7 @@ class SkyhookDM:
 
     def runQuery(self, obj, querystr):
         #limit just to 1 obj
-        # command_template = '--wthreads 1 --qdepth 120 --query hep --pool hepdatapool --start-obj #startobj --output-format \"SFT_PYARROW_BINARY\" --data-schema \"#dataschema\" --project \"#colname\" --num-objs #objnum --oid-prefix \"#prefix\" --table-name \"#tablename\" --subpartitions 10'
         command_template = ['--wthreads', '1',  '--qdepth', '120',  '--query', 'hep', '--pool', self.ceph_pool, '--output-format', 'SFT_PYARROW_BINARY', '--num-objs', '1', '--subpartitions', '10']
-
 
         def generateQueryCommand(file, querystr):
             cmds = []
@@ -157,8 +148,6 @@ class SkyhookDM:
                     local_prefix = local_prefix + '#' + elem.strip()
                 obj_prefix = prefix + local_prefix + '#'
                 data_schema = ''
-
-                # print(obj_prefix)
 
                 f_schema = file.getSchema()
                 found = False
@@ -249,8 +238,8 @@ class SkyhookDM:
                 while True:
                     if cursor == stream_length:
                         break
-                    sizebf = tablestream[cursor:cursor+4]
-                    cursor = cursor + 4
+                    sizebf = tablestream[cursor:cursor+8]
+                    cursor = cursor + 8
                     size = struct.unpack("<i",sizebf)[0]
                     stream = tablestream[cursor:cursor+size]
                     cursor = cursor + size
@@ -306,8 +295,8 @@ class SkyhookDM:
                     while True:
                         if cursor == stream_length:
                             break
-                        sizebf = tablestream[cursor:cursor+4]
-                        cursor = cursor + 4
+                        sizebf = tablestream[cursor:cursor+8]
+                        cursor = cursor + 8
                         size = struct.unpack("<i",sizebf)[0]
                         stream = tablestream[cursor:cursor+size]
                         cursor = cursor + size
@@ -371,15 +360,6 @@ class LazyDataframe:
         self._entrysteps = entrysteps
         self._batches = self._arr_table.to_batches(entrysteps)
 
-
-
-# CREATE TABLE Persons (
-#     PersonID int,
-#     LastName varchar(255),
-#     FirstName varchar(255),
-#     Address varchar(255),
-#     City varchar(255)
-# );
 
 class TableGroup:
     def __init__(self, table_group_name, metadata = None):
