@@ -7,33 +7,32 @@ class SkyhookDM:
         self.client = None
         self.addr = None
 
-        # try:
-        #     self.cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
-        #     self.cluster.connect()
-
-        # except Exception as e:
-        #     print(str(e))
-
     def connect(self, ip, ceph_pool_name):
         addr = ip+':8786'
         self.addr = addr
         client = Client(addr)
         self.client = client
         self.ceph_pool = ceph_pool_name
-        # self.ioctx = self.cluster.open_ioctx(ceph_pool_name)
+
+    def saveDatabase(self, db):
+
+        def runOnDriver(buff_bytes, name,  ceph_pool):
+            from skyhookdmdriver import skyhook_driver as sd
+            res = sd.writeToCeph(buff_bytes, name, ceph_pool)
+            return res
+        
+        fu = self.client.submit(runOnDriver, db.serialize(), db.getName(), self.ceph_pool)
+        result = fu.result()
+        return result
 
 
     # Write the arrow table to Ceph
-    def writeArrowTable(self, table_group_name, table_name, table):
+    def write(self, table, db_name, prefix, table_name, type= 'arrow', partitioner = None, mode = 'create|overwrite'):
         
         def runOnDriver(buff_bytes, name,  ceph_pool):
             from skyhookdmdriver import skyhook_driver as sd
             res = sd.writeToCeph(buff_bytes, name, ceph_pool)
             return res
-
-        # In the servicex case, the data_schema_name is did for now
-        # the data_schema_name is not checked so far. Will add the logic later.
-        # May also need to get the object of data_schema_name and add new information about the tables written into the SkyhookDM
 
         id_array = range(len(table.columns[0]))
         event_id_col = pa.field('EVENT_ID', pa.int64())
@@ -58,40 +57,13 @@ class SkyhookDM:
             buff_bytes = buff.to_pybytes()
             buff_bytes = addFB_Meta(buff_bytes)
 
-            sub_table_name = table_group_name + '#' + table_name + '#' + table.column_names[i] + '.0.0'
+            sub_table_name = db_name + '#' + prefix + '#' + table_name + '#' + table.column_names[i] + '.0.0'
             fu = self.client.submit(runOnDriver, buff_bytes, sub_table_name, self.ceph_pool)
             result = fu.result()
             if result is True:
                 object_names.append(sub_table_name)
         
         return object_names
-
-
-    def addDatasetSchema(self, schema_json, data_type = 'servicex'):
-        def runOnDriver(schema_json, name, data_type, ceph_pool):
-            from skyhookdmdriver import skyhook_driver as sd
-            res = sd.addDatasetSchema(schema_json, name, data_type, ceph_pool)
-            return res
-
-        values = json.loads(schema_json)
-
-        # the name of the schema is named after the did for now
-        name = values['did']
-
-        fu = self.client.submit(runOnDriver, schema_json, name, data_type, self.ceph_pool)
-        result = fu.result()
-    
-    def createTableGroup(self, table_group):
-        
-        def runOnDriver(buff_bytes, name,  ceph_pool):
-            from skyhookdmdriver import skyhook_driver as sd
-            res = sd.writeToCeph(buff_bytes, name, ceph_pool)
-            return res
-        
-        fu = self.client.submit(runOnDriver, table_group.serialize(), table_group.getName(), self.ceph_pool)
-
-        result = fu.result()
-
 
 
     def writeDataset(self, path, dstname):
@@ -361,20 +333,20 @@ class LazyDataframe:
         self._batches = self._arr_table.to_batches(entrysteps)
 
 
-class TableGroup:
-    def __init__(self, table_group_name, metadata = None):
-        self._name = table_group_name
+class Database:
+    def __init__(self, db_name, metadata = None):
+        self._name = db_name
         self.schema = {}
-        self.schema['table_group_name'] = table_group_name
+        self.schema['db_name'] = db_name
         self.schema['metadata'] = metadata
-        self.schema['type'] = 'servicex'
         self.tables = []
     
 
-    def addTable(self, table_name, arrow_schema, metadata = None):
-        schema = arrow_schema
+    def createTable(self, prefix, table_name, table_schema, tag = '', metadata = None):
+        schema = table_schema
 
         table = {}
+        table['prefix'] = prefix
         table['table_name'] = table_name
 
         col_list = []
@@ -398,4 +370,3 @@ class TableGroup:
 
     def getName(self):
         return self._name
-
