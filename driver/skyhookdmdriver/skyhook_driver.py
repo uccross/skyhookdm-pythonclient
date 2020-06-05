@@ -36,7 +36,6 @@ def writeToCeph(buff_bytes, name,  ceph_pool):
 
     return True
 
-
 def readFromCeph(name, ceph_pool):
     cluster = rados.Rados(conffile='/etc/ceph/ceph.conf')
     cluster.connect()

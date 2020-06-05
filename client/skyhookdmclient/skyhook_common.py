@@ -9,7 +9,7 @@ from pyarrow import csv
 from os import listdir
 from os.path import isfile, join
 from dask.distributed import Client
-from skyhookdmdriver.Tables import FB_Meta
+from skyhookdmdriver import FB_Meta
 
 class SkyFormatType(enum.Enum): 
     SFT_FLATBUF_FLEX_ROW = 1
