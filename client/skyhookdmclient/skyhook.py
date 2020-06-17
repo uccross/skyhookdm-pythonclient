@@ -26,6 +26,40 @@ class SkyhookDM:
         return result
 
 
+    def write_full(self, table_name, table):
+        def runOnDriver(buff_bytes, name,  ceph_pool):
+            from skyhookdmdriver import skyhook_driver as sd
+            res = sd.writeToCeph(buff_bytes, name, ceph_pool)
+            return res
+
+        # add the arrow table metadata , assuming it has at lease one col, need to handle exceptions
+        meta_obj = TableMeta('0', '1', '2', SkyFormatType.SFT_ARROW, "Need to be extracted from the fields of the table (to do)", 'n/a', table_name, str(len(table.columns[0])))
+        sche_meta = meta_obj.getTableMeta()
+        schema = table.schema
+        schema = schema.with_metadata(sche_meta)
+            
+        # Serialize arrow table to bytes
+        batches = table.to_batches()
+        sink = pa.BufferOutputStream()
+        writer = pa.RecordBatchStreamWriter(sink, schema)
+        for batch in batches:
+            writer.write_batch(batch)   
+        buff = sink.getvalue()
+        buff_bytes = buff.to_pybytes()
+
+        # add FB_Meta wrapper
+        buff_bytes = addFB_Meta(buff_bytes)
+
+        # write to Ceph
+        fu = self.client.submit(runOnDriver, buff_bytes, table_name, self.ceph_pool)
+
+        result = fu.result()
+        if result is True:
+            return True
+        
+        return False
+
+
     # Write the arrow table to Ceph
     def write(self, table, db_name, prefix, table_name, type= 'arrow', partitioner = None, mode = 'create|overwrite'):
         
