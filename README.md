@@ -1,7 +1,6 @@
 **Setup SkyhookDM Driver** (suppose that you have the Skyhook Cloudlab expeirment running):
 
 * Run the script of "[setup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/miscellaneous/setup.sh)" to check and install dependencies and create the required ceph pool.
-* Logout the ssh session and login again. 
 * Run the script of "[startup.sh](https://github.com/uccross/skyhookdm-pythonclient/blob/master/miscellaneous/startup.sh)" and you're ready to go.
 
 Note: Cloning this repo is not necessary. Runing the scripts is enough. The scripts use 'pip' to install skyhookdmdriver and other dependencies which can't be installed via 'pip' commands. 
